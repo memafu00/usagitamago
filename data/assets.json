@@ -1,0 +1,16 @@
+[
+  {
+    "name": "通常立ち絵",
+    "image": "images/material/portrait.png",
+    "note": "PNG透過・3000×4000px",
+    "credit": "めまふ",
+    "dl": "images/material/portrait.png"
+  },
+  {
+    "name": "設定イラスト",
+    "image": "images/material/settings.png",
+    "note": "キャラクター設定資料",
+    "credit": "めまふ",
+    "dl": "images/material/settings.png"
+  }
+]

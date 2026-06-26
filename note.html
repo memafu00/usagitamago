@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NOTE</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<script src="maintenance.js"></script>
+<script src="marquee.js"></script>
+<script src="pull-refresh.js"></script>
+<!-- ✶ ぼくのひみつ [4/5]「た」：春分の日以降、最初の満月の次の日曜は、たまごのお祭り！ここでお祝いしよう！ -->
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<nav id="nav">
+  <div class="nav-inner">
+    <div class="nav-logo" id="navLogo">読込中...</div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">TOP</a></li>
+      <li><a href="story.html">STORY</a></li>
+      <li><a href="utau.html">UTAU</a></li>
+      <li><a href="note.html" class="active">NOTE</a></li>
+      <li><a href="contact.html">CONTACT</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="メニュー">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="marquee-bar"><span class="marquee-inner" id="marqueeText">読込中...</span></div>
+<div class="page-body">
+<div class="page-header">
+  <div class="page-header-deco">☆.。.:*・°☆.。.:*・°☆.。.:*・°☆.。.:*・°☆</div>
+  <div class="page-header-title">NOTE</div>
+  <div class="page-header-sub">～利用規約～</div>
+  <div class="page-header-deco">☆.。.:*・°☆.。.:*・°☆.。.:*・°☆.。.:*・°☆</div>
+</div>
+<div class="layout">
+  <div class="main" id="mainContent">読込中...</div>
+  <div class="sidebar">
+    <div class="widget">
+      <div class="widget-t">☆ LINK ☆</div>
+      <div class="widget-b" style="text-align:left;font-size:9px;">
+        <a href="utau.html" style="color:#9070c8;display:block;margin-bottom:2px;">UTAU音源</a>
+        <a href="contact.html" style="color:#9070c8;display:block;margin-bottom:2px;">お問い合わせ</a>
+        <a href="index.html" style="color:#9070c8;display:block;">TOPに戻る</a>
+      </div>
+    </div>
+  </div>
+</div>
+</div><!-- /.page-body -->
+<footer id="footer"></footer>
+
+<script>
+async function loadJSON(path){ const r=await fetch(path); return r.json(); }
+function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+(function(){
+  const btn=document.getElementById('hamburger'),links=document.getElementById('navLinks'),overlay=document.getElementById('drawerOverlay');
+  function toggle(o){btn.classList.toggle('open',o);links.classList.toggle('open',o);overlay.classList.toggle('open',o);}
+  btn.addEventListener('click',()=>toggle(!btn.classList.contains('open')));
+  overlay.addEventListener('click',()=>toggle(false));
+  links.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>toggle(false)));
+})();
+
+(async function(){
+  const [site, note] = await Promise.all([loadJSON('data/site.json'), loadJSON('data/note.json')]);
+  document.getElementById('navLogo').textContent = site.nav_logo;
+  document.getElementById('footer').textContent = site.footer;
+  document.getElementById('marqueeText').textContent = pickMarqueeText(site);
+
+  const typeLabel = { ok:'OK', ng:'NG', any:'要相談' };
+  const typeClass = { ok:'note-ok', ng:'note-ng', any:'note-any' };
+
+  const sectionsHtml = note.sections.map(sec=>`
+    <div class="note-section">
+      <div class="note-section-title">${escapeHtml(sec.title)}</div>
+      ${sec.rules.map(r=>`
+        <div class="note-rule">
+          <span class="${typeClass[r.type]}">${typeLabel[r.type]}</span>
+          ${escapeHtml(r.text)}
+        </div>
+        ${r.note ? `<div class="note-rule-note">⚠ ${escapeHtml(r.note)}</div>` : ''}`).join('')}
+    </div>`).join('');
+
+  const disclaimerHtml = note.disclaimer && note.disclaimer.length ? `
+    <div class="note-section">
+      <div class="note-section-title">免責事項</div>
+      ${note.disclaimer.map(d=>`
+        <div class="note-rule" style="align-items:flex-start;">
+          <span style="color:#9070c8;flex-shrink:0;">※</span>
+          <span style="font-size:13px;color:#504080;line-height:1.9;">${escapeHtml(d)}</span>
+        </div>`).join('')}
+    </div>` : '';
+
+  const creditHtml = `
+    <div class="note-section">
+      <div class="note-section-title">クレジット表記</div>
+      ${note.credit_intro ? `<div style="font-size:13px;color:#504080;line-height:1.9;margin-bottom:8px;">${escapeHtml(note.credit_intro)}</div>` : ''}
+      <div class="note-credit">${escapeHtml(note.credit).replace(/\n/g,'<br>')}</div>
+    </div>`;
+
+  const contactHtml = note.contact_note ? `
+    <div class="note-section">
+      <div class="note-section-title">その他</div>
+      <div style="font-size:13px;color:#504080;line-height:2;">${escapeHtml(note.contact_note).replace('CONTACT', '<a href="contact.html" style="color:#6040a0;text-decoration:underline;">CONTACT</a>')}</div>
+    </div>` : '';
+
+  document.getElementById('mainContent').innerHTML = `
+    <div class="note-updated">最終更新：${escapeHtml(note.updated)}</div>
+    ${sectionsHtml}${creditHtml}${disclaimerHtml}${contactHtml}`;
+})();
+</script>
+</body>
+</html>

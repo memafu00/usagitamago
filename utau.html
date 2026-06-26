@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UTAU</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<script src="maintenance.js"></script>
+<script src="marquee.js"></script>
+<script src="pull-refresh.js"></script>
+<!-- ✶ ぼくのひみつ [3/5]「す」：みくちゃんみたいに歌ってみたいな〜♪ -->
+<div class="drawer-overlay" id="drawerOverlay"></div>
+
+<!-- 素材の拡大表示 -->
+<div class="asset-zoom" id="assetZoom" onclick="closeAssetZoom()">
+  <button class="asset-zoom-close" onclick="closeAssetZoom()" aria-label="閉じる">✕</button>
+  <img id="assetZoomImg" alt="">
+</div>
+<nav id="nav">
+  <div class="nav-inner">
+    <div class="nav-logo" id="navLogo">読込中...</div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">TOP</a></li>
+      <li><a href="story.html">STORY</a></li>
+      <li><a href="utau.html" class="active">UTAU</a></li>
+      <li><a href="note.html">NOTE</a></li>
+      <li><a href="contact.html">CONTACT</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="メニュー">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="marquee-bar"><span class="marquee-inner" id="marqueeText">読込中...</span></div>
+<div class="page-body">
+<div class="page-header">
+  <div class="page-header-deco">☆.。.:*・°☆.。.:*・°☆.。.:*・°☆.。.:*・°☆</div>
+  <div class="page-header-title">UTAU</div>
+  <div class="page-header-sub">～音源配布・立ち絵素材～</div>
+  <div class="page-header-deco">☆.。.:*・°☆.。.:*・°☆.。.:*・°☆.。.:*・°☆</div>
+</div>
+<div class="layout">
+  <div class="main" id="mainContent">読込中...</div>
+  <div class="sidebar">
+    <div class="widget">
+      <div class="widget-t">☆ LINK ☆</div>
+      <div class="widget-b" style="text-align:left;font-size:9px;">
+        <a href="note.html" style="color:#9070c8;display:block;margin-bottom:2px;">利用規約</a>
+        <a href="contact.html" style="color:#9070c8;display:block;margin-bottom:2px;">管理者について</a>
+        <a href="index.html" style="color:#9070c8;display:block;">TOPに戻る</a>
+      </div>
+    </div>
+  </div>
+</div>
+</div><!-- /.page-body -->
+<footer id="footer"></footer>
+
+<script>
+async function loadJSON(path){ const r=await fetch(path); return r.json(); }
+function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// 素材をクリックで拡大表示
+function openAssetZoom(src, alt){
+  const z = document.getElementById('assetZoom');
+  const img = document.getElementById('assetZoomImg');
+  img.src = src; img.alt = alt || '';
+  z.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeAssetZoom(){
+  document.getElementById('assetZoom').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeAssetZoom(); });
+
+(function(){
+  const btn=document.getElementById('hamburger'),links=document.getElementById('navLinks'),overlay=document.getElementById('drawerOverlay');
+  function toggle(o){btn.classList.toggle('open',o);links.classList.toggle('open',o);overlay.classList.toggle('open',o);}
+  btn.addEventListener('click',()=>toggle(!btn.classList.contains('open')));
+  overlay.addEventListener('click',()=>toggle(false));
+  links.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>toggle(false)));
+})();
+
+let currentAudio=null, currentBtn=null;
+
+function toggleWav(btn){
+  const row=btn.closest('.wav-sample');
+  const src=row.dataset.src;
+  const bar=row.querySelector('.wav-progress');
+  const timeEl=row.querySelector('.wav-time');
+  if(!row._audio){
+    row._audio=new Audio(src);
+    row._audio.addEventListener('timeupdate',()=>{
+      if(row._audio.duration){
+        bar.style.width=(row._audio.currentTime/row._audio.duration*100)+'%';
+        const t=Math.floor(row._audio.currentTime);
+        timeEl.textContent=`${Math.floor(t/60)}:${String(t%60).padStart(2,'0')}`;
+      }
+    });
+    row._audio.addEventListener('ended',()=>{
+      btn.textContent='▶';btn.classList.remove('playing');
+      bar.style.width='0%';timeEl.textContent='0:00';
+      currentAudio=null;currentBtn=null;
+    });
+  }
+  if(row._audio.paused){
+    if(currentAudio&&currentAudio!==row._audio){
+      currentAudio.pause();currentAudio.currentTime=0;
+      if(currentBtn){currentBtn.textContent='▶';currentBtn.classList.remove('playing');}
+      const pr=currentBtn?.closest('.wav-sample');
+      if(pr){pr.querySelector('.wav-progress').style.width='0%';pr.querySelector('.wav-time').textContent='0:00';}
+    }
+    row._audio.play().catch(()=>{});
+    btn.textContent='■';btn.classList.add('playing');
+    currentAudio=row._audio;currentBtn=btn;
+  } else {
+    row._audio.pause();btn.textContent='▶';btn.classList.remove('playing');
+    currentAudio=null;currentBtn=null;
+  }
+}
+
+function seekWav(e,wrap){
+  const row=wrap.closest('.wav-sample');
+  if(!row._audio||!row._audio.duration)return;
+  const rect=wrap.getBoundingClientRect();
+  row._audio.currentTime=((e.clientX-rect.left)/rect.width)*row._audio.duration;
+}
+
+/* 収録特殊音素の「もっと見る」開閉 */
+function togglePhonemes(btn){
+  const wrap = btn.previousElementSibling;
+  if(!wrap) return;
+  const open = wrap.classList.toggle('expanded');
+  btn.innerHTML = open ? '閉じる ▲' : 'もっと見る ▼';
+}
+
+(async function(){
+  const [site, utau, assets] = await Promise.all([
+    loadJSON('data/site.json'),
+    loadJSON('data/utau.json'),
+    loadJSON('data/assets.json'),
+  ]);
+  document.getElementById('navLogo').textContent = site.nav_logo;
+  document.getElementById('footer').textContent = site.footer;
+  document.getElementById('marqueeText').textContent = pickMarqueeText(site);
+
+  /* ── 音源カード ── */
+  const utauHtml = utau.map(u => {
+    const specialPhonemes = u.special_phonemes ? `
+      <div style="margin-bottom:10px;">
+        <div style="font-size:12px;color:#9070c8;letter-spacing:0.1em;margin-bottom:4px;">収録特殊音素</div>
+        <div class="phonemes-box-wrap">
+          <div class="special-phonemes">${escapeHtml(u.special_phonemes)}</div>
+        </div>
+        <button class="phonemes-toggle" type="button" onclick="togglePhonemes(this)">もっと見る ▼</button>
+      </div>` : '';
+    const samples = u.samples && u.samples.length ? `
+      <div class="wav-player">
+        <div class="wav-player-label">SAMPLE</div>
+        ${u.samples.map(s=>`
+          <div class="wav-sample" data-src="${escapeHtml(s.src)}">
+            <span class="wav-title">${escapeHtml(s.title)}</span>
+            <button class="wav-play-btn" onclick="toggleWav(this)" type="button">▶</button>
+            <div class="wav-progress-wrap" onclick="seekWav(event,this)">
+              <div class="wav-progress"></div>
+            </div>
+            <span class="wav-time">0:00</span>
+          </div>`).join('')}
+      </div>` : '';
+    return `
+      <div class="card" style="margin-bottom:12px;">
+        <div class="card-header">
+          <span class="card-header-tag">${escapeHtml(u.tag)}</span>
+          <span class="card-header-title">${escapeHtml(u.name)}</span>
+        </div>
+        <div class="utau-card-body">
+          <div class="utau-portrait">
+            <img src="${escapeHtml(u.image)}" alt="${escapeHtml(u.name)}"
+              onerror="this.outerHTML='<div class=\\'utau-portrait-placeholder\\'>立ち絵<br>（${escapeHtml(u.image)}）<br>3000×4000px</div>'">
+          </div>
+          <div class="utau-info">
+            <div class="utau-desc">${escapeHtml(u.desc).replace(/\n/g,'<br>')}</div>
+            <div class="utau-meta-row">
+              ${u.specs.map(s=>`<div class="utau-meta-item">${escapeHtml(s)}</div>`).join('')}
+              ${u.original_tuning ? `<div class="utau-meta-item"><span class="utau-meta-label">原音設定</span>${escapeHtml(u.original_tuning)}</div>` : ''}
+              ${u.resampler ? `<div class="utau-meta-item"><span class="utau-meta-label">推奨</span>${escapeHtml(u.resampler.recommended)}</div>` : ''}
+              <div class="utau-meta-item"><span class="utau-meta-label">立ち絵</span>${escapeHtml(u.illust || 'めまふ')}</div>
+            </div>
+            ${samples}
+            ${specialPhonemes}
+            <a href="${escapeHtml(u.dl_url)}" target="_blank" rel="noopener" class="utau-dl-btn">⬇ BowlRollでダウンロード</a>
+            ${u.dl_url_booth ? `<a href="${escapeHtml(u.dl_url_booth)}" target="_blank" rel="noopener" class="utau-dl-btn" style="margin-top:8px;">⬇ BOOTHでダウンロード</a>` : ''}
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+
+  /* ── 素材セクション ── */
+  const assetsHtml = `
+    <div style="border-top:1px solid #c4a8f5;margin-top:12px;padding-top:12px;">
+      <div style="font-family:'Mochiy Pop One',sans-serif;font-size:18px;color:#f2a0c2;letter-spacing:0.08em;margin:4px 0 12px;text-align:center;text-shadow:0 0 6px #fff2c8,1px 1px 0 #e895ba;">☆ 素材 ☆</div>
+      <div class="assets-grid">
+        ${assets.map(a=>`
+          <div class="asset-card">
+            <img src="${escapeHtml(a.image)}" alt="${escapeHtml(a.name)}" class="asset-thumb"
+              onclick="openAssetZoom('${escapeHtml(a.image)}','${escapeHtml(a.name)}')"
+              onerror="this.outerHTML='<div class=\\'asset-thumb-placeholder\\'>画像</div>'">
+            <div class="asset-name">${escapeHtml(a.name)}</div>
+            <div class="asset-note">${escapeHtml(a.note)}</div>
+            <div class="art-credit art-credit-center">illust：${escapeHtml(a.credit || 'めまふ')}</div>
+            <a href="${escapeHtml(a.dl)}" download class="asset-dl-btn">DOWNLOAD</a>
+          </div>`).join('')}
+      </div>
+    </div>`;
+
+  const notice = `<div style="font-size:14px;font-weight:bold;color:#d97aa6;background:#fff7e0;border:2px solid #ffc8e0;border-radius:14px;padding:9px 12px;margin-bottom:12px;text-align:center;line-height:1.7;box-shadow:0 3px 0 #ffe6b8;">★ ダウンロード前に必ず <a href="note.html" style="color:#e08bb0;text-decoration:underline;">NOTE（利用規約）</a> をご確認ください ★</div>`;
+
+  document.getElementById('mainContent').innerHTML = notice + utauHtml + assetsHtml;
+
+  /* 折りたたみが不要（短い）なら「もっと見る」を隠す */
+  document.querySelectorAll('.phonemes-box-wrap').forEach(w=>{
+    const btn = w.nextElementSibling;
+    if(w.scrollHeight <= w.clientHeight + 4){
+      if(btn) btn.style.display='none';
+      w.style.maxHeight='none';
+    }
+  });
+})();
+</script>
+</body>
+</html>

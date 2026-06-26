@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loading...</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<script src="maintenance.js"></script>
+<script src="marquee.js"></script>
+<script src="pull-refresh.js"></script>
+<!-- ✶ ぼくのひみつ [1/5]「い」：むかしの日本の時間では、午前6時〜午前8時を「卯の刻」というみたい。この時間には、君に 話しかけられるんだ！5のつくときに、話しかけるかも！ -->
+
+<canvas class="veil-canvas" id="veilCanvas"></canvas>
+<div class="murmur-layer" id="murmurLayer"></div>
+<div class="fold"></div>
+<div class="dream-card"><div class="dream-card-text" id="dreamText"></div></div>
+<div class="drawer-overlay" id="drawerOverlay"></div>
+
+<!-- 初回訪問の警告ウィンドウ -->
+<div class="xpwin-overlay" id="warnOverlay">
+  <div class="xpwin" role="dialog" aria-modal="true">
+    <div class="xpwin-bar">
+      <span class="xpwin-bar-title"><span class="xpwin-bar-ico">⚠</span> 注意</span>
+    </div>
+    <div class="xpwin-body">
+      <div class="xpwin-ico">⚠</div>
+      <div class="xpwin-msg">
+        <ul>
+          <li>ネットと現実世界の干渉によって、画面が乱れる場合があります。</li>
+          <li>卯たまごが話しかける場合があります。音量に注意してください。</li>
+          <li>このページを開いている時は、眠らないようにご注意ください。向こうの世界に連れていかれる場合があります。</li>
+        </ul>
+      </div>
+    </div>
+    <div class="xpwin-foot">
+      <button class="xpwin-ok" id="warnOk" type="button">OK</button>
+    </div>
+  </div>
+</div>
+
+<nav id="nav">
+  <div class="nav-inner">
+    <div class="nav-logo" id="navLogo">読込中...</div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html" class="active">TOP</a></li>
+      <li><a href="story.html">STORY</a></li>
+      <li><a href="utau.html">UTAU</a></li>
+      <li><a href="note.html">NOTE</a></li>
+      <li><a href="contact.html">CONTACT</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="メニュー">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="marquee-bar"><span class="marquee-inner" id="marqueeText">読込中...</span></div>
+
+<div class="page-body">
+<div class="page-header">
+  <div class="page-header-deco" id="headerDeco">☆.。.:*・°☆.。.:*・°☆.。.:*・°☆.。.:*・°☆</div>
+  <div class="page-header-title" id="headerTitle">読込中...</div>
+  <div class="page-header-sub" id="headerSub">読込中...</div>
+  <div class="page-header-deco">☆.。.:*・°☆.。.:*・°☆.。.:*・°☆.。.:*・°☆</div>
+</div>
+
+<div class="layout">
+  <div class="main" id="mainContent">
+    <!-- プロフィールカード・記事はJSで作成 -->
+  </div>
+  <div class="sidebar">
+    <!-- 時計ウィジェット -->
+    <div class="widget">
+      <div class="widget-t">☆ CLOCK ☆</div>
+      <div class="widget-b">
+        <div class="clock-wrap" id="clockWrap">
+          <img class="clock-base" src="images/site/clock.png" alt="時計"
+            onerror="this.style.display='none'">
+          <svg class="clock-needle-svg" id="clockSvg" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
+            <line id="handHour" x1="300" y1="300" x2="300" y2="140"
+              stroke="#e89a5a" stroke-width="12" stroke-linecap="round"/>
+            <line id="handMin"  x1="300" y1="300" x2="300" y2="90"
+              stroke="#d98140" stroke-width="7" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div style="font-size:16px;color:#6040a0;font-family:'Kaisei Decol',serif;font-weight:700;" id="countNum">0</div>
+        <div style="font-size:8px;color:#9070c8;margin-bottom:6px;">回</div>
+        <div style="border-top:1px dashed #c4a8f5;padding-top:6px;font-size:9px;color:#7060a0;line-height:1.8;" id="clockTime">----.--.--<br>--- --:--</div>
+        <div style="font-size:14px;margin-top:3px;" id="moonIcon">●</div>
+      </div>
+    </div>
+    <div class="widget">
+      <div class="widget-t">☆ LINK ☆</div>
+      <div class="widget-b" style="text-align:left;">
+        <a href="utau.html" style="color:#9070c8;display:block;margin-bottom:2px;">UTAU音源</a>
+        <a href="note.html" style="color:#9070c8;display:block;margin-bottom:2px;">利用規約</a>
+        <a href="contact.html" style="color:#9070c8;display:block;">管理者について</a>
+      </div>
+    </div>
+    <div class="widget">
+      <div class="widget-t">☆ CATEGORY ☆</div>
+      <div class="widget-b" style="text-align:left;font-size:9px;" id="categoryWidget">
+        読込中…
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /.page-body -->
+<footer id="footer"></footer>
+
+<script>
+/* ============================================================
+   共通ユーティリティ
+   ============================================================ */
+async function loadJSON(path) {
+  const res = await fetch(path);
+  return res.json();
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+/* ============================================================
+   ハンバーガーメニュー
+   ============================================================ */
+(function(){
+  const btn = document.getElementById('hamburger');
+  const links = document.getElementById('navLinks');
+  const overlay = document.getElementById('drawerOverlay');
+  function toggle(open) {
+    btn.classList.toggle('open', open);
+    links.classList.toggle('open', open);
+    overlay.classList.toggle('open', open);
+  }
+  btn.addEventListener('click', () => toggle(!btn.classList.contains('open')));
+  overlay.addEventListener('click', () => toggle(false));
+  links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => toggle(false)));
+})();
+
+/* ============================================================
+   メイン
+   ============================================================ */
+(async function(){
+  const [site, posts] = await Promise.all([
+    loadJSON('data/site.json'),
+    loadJSON('data/posts.json'),
+  ]);
+
+  /* ── サイト設定反映 ── */
+  document.title = site.site_title;
+  document.getElementById('navLogo').textContent = site.nav_logo;
+  document.getElementById('headerTitle').textContent = site.site_title;
+  document.getElementById('headerSub').textContent = site.site_subtitle;
+  document.getElementById('footer').textContent = site.footer;
+
+  /* ── 時計針の位置をsite.jsonから設定 ── */
+  const svg = document.getElementById('clockSvg');
+  svg.setAttribute('viewBox', site.clock_viewbox || '0 0 600 600');
+  const cx = site.clock_center_x || 300;
+  const cy = site.clock_center_y || 300;
+  const hl = site.clock_hour_length || 160;
+  const ml = site.clock_min_length || 220;
+  const handHour = document.getElementById('handHour');
+  const handMin  = document.getElementById('handMin');
+  handHour.setAttribute('x1', cx); handHour.setAttribute('y1', cy);
+  handHour.setAttribute('x2', cx); handHour.setAttribute('y2', cy - hl);
+  handMin.setAttribute('x1', cx);  handMin.setAttribute('y1', cy);
+  handMin.setAttribute('x2', cx);  handMin.setAttribute('y2', cy - ml);
+  handHour.style.transformOrigin = `${cx}px ${cy}px`;
+  handMin.style.transformOrigin  = `${cx}px ${cy}px`;
+
+  /* ── プロフィールカード ── */
+  const profileRows = site.profile.map(p =>
+    `<div class="p-row"><span class="p-label">${escapeHtml(p.label)}</span><span class="p-value">${escapeHtml(p.value)}</span></div>`
+  ).join('');
+
+  const profileCard = `
+    <div class="profile-card">
+      <div class="profile-card-header">☆ PROFILE ☆</div>
+      <div class="profile-card-body">
+        <div class="profile-icon">
+          <img src="${escapeHtml(site.chara_icon)}" alt="${escapeHtml(site.chara_name)}"
+            onerror="this.outerHTML='<div class=\'profile-icon-placeholder\'>キャラ絵<br>（${escapeHtml(site.chara_icon)}）</div>'">
+        </div>
+        <div class="profile-info">
+          <div>
+            <div class="profile-name">${escapeHtml(site.chara_name)}</div>
+            <div class="profile-ruby">${escapeHtml(site.chara_ruby || '')}</div>
+          </div>
+          ${site.chara_description ? `<div class="profile-desc">${escapeHtml(site.chara_description).replace(/\n/g,'<br>')}</div>` : ''}
+          <div class="profile-table-grid">${profileRows}</div>
+          ${site.chara_catchcopy ? `<div class="profile-catchcopy">「${escapeHtml(site.chara_catchcopy)}」</div>` : ''}
+          <div class="profile-note">※ プロフィールやビジュアルは予告なく上書き（変更）されることがあります。</div>
+          <button class="profile-utau-btn" onclick="location.href='utau.html'">⬇ UTAU音源はこちら</button>
+        </div>
+      </div>
+    </div>`;
+
+  /* ── 記事 ──
+     TOPに表示するのは「ブログ記事」（body を持つエントリ）だけ。
+     STORY専用コンテンツ（漫画・動画・webtoon・音声・文章）は story.html が担当し、
+     TOPとは独立。ブログ記事から [リンク名](story) でSTORYへ飛ばせる。 */
+  // draft:true の投稿は非公開（表示しない）。下書きとして残せる。
+  const visiblePosts = posts.filter(p => !p.draft);
+
+  const blogPosts = visiblePosts.filter(p => p.body);
+
+  function bodyToHtml(body, link, post) {
+    let html = escapeHtml(body).replace(/\n/g, '<br>');
+    if (link) {
+      html = html.replace(
+        /\[([^\]]+)\]\(([^)]+)\)/g,
+        (_, text, target) => {
+          // story/utau/note/contactはページリンク、それ以外は記事内アンカー
+          const pages = ['story','utau','note','contact','index'];
+          // [text](story#anchor) のように # で飛び先を明示できる（TOP記事→STORYの任意の話）
+          const hashIdx = target.indexOf('#');
+          const base = hashIdx >= 0 ? target.slice(0, hashIdx) : target;
+          const anchor = hashIdx >= 0 ? target.slice(hashIdx + 1) : '';
+          if(pages.includes(base)) {
+            let href;
+            if(anchor) {
+              href = `${base}.html#${anchor}`;
+            } else if(base === 'story' && post && post.id && (post.manga_pages || post.webtoon_pages || post.video_id || post.audio || post.text)) {
+              // この記事自身がSTORYコンテンツを持つ場合は、その話へディープリンク
+              href = `story.html#${post.id}`;
+            } else {
+              href = `${base}.html`;
+            }
+            return `<button class="post-link-btn" onclick="location.href='${href}'">${escapeHtml(text)}</button>`;
+          } else {
+            return `<button class="post-link-btn" onclick="openPost(${parseInt(target)-1})">${escapeHtml(text)}</button>`;
+          }
+        }
+      );
+    }
+    return html;
+  }
+
+  const postsHtml = blogPosts.map((p, idx) => {
+    const tags = (p.tags || []).map(t => `<span class="post-tag">#${escapeHtml(t)}</span>`).join('');
+    const cmts = p.comments || [];
+    const comments = cmts.length ? `
+      <div class="comment-wrap">
+        <div class="comment-label">コメント (${cmts.length})</div>
+        ${cmts.map(c => `
+          <div class="comment ${c.is_chara ? 'chara' : ''}">
+            <div class="comment-name">${escapeHtml(c.name)} (${escapeHtml(c.date)})</div>
+            ${escapeHtml(c.text)}
+          </div>`).join('')}
+      </div>` : '';
+    return `
+      <div class="card">
+        <div class="post-header" onclick="togglePost(this)">
+          <div>
+            <div class="post-date">${escapeHtml(p.date)} (${escapeHtml(p.day)})</div>
+            <div class="post-title">${escapeHtml(p.top_title || p.title)}</div>
+          </div>
+          <span class="post-arr">▶</span>
+        </div>
+        <div class="post-body" id="post-${idx}">
+          ${bodyToHtml(p.body, p.link, p)}
+          <div class="post-tags">${tags}</div>
+          ${comments}
+        </div>
+      </div>`;
+  }).join('');
+
+  /* ── カテゴリ集計：クリックで該当記事にジャンプ ── */
+  const catPosts = {};
+  blogPosts.forEach((p, idx) => (p.tags || []).forEach(t => {
+    if(!catPosts[t]) catPosts[t] = [];
+    catPosts[t].push(idx);
+  }));
+  document.getElementById('categoryWidget').innerHTML =
+    Object.entries(catPosts).map(([tag, idxArr]) => {
+      const links = idxArr.map(i =>
+        `<a href="#" onclick="event.preventDefault();openPost(${i})" style="color:#9070c8;font-size:13px;text-decoration:none;">${i+1}</a>`
+      ).join('');
+      return `<div style="margin-bottom:6px;">
+        <span style="font-size:11px;color:#7060a0;">${escapeHtml(tag)}</span>
+        <span style="display:flex;flex-wrap:wrap;gap:4px 8px;margin-top:2px;">${links}</span>
+      </div>`;
+    }).join('') || 'なし';
+
+  document.getElementById('mainContent').innerHTML = profileCard + postsHtml;
+
+  /* ── 時計・月齢・マーキー ── */
+  function getMoonAge(d) {
+    const k = new Date(2000,0,6);
+    return (((d-k)/(1000*60*60*24)) % 29.53 + 29.53) % 29.53;
+  }
+  function getMoonIcon(a) {
+    if(a<1.85) return '○';
+    if(a<7.38) return '◑';
+    if(a<14.77) return '●';
+    if(a<23.14) return '◑';
+    return '○';
+  }
+  let count = 0;
+  function pickMarquee(isTamago, isFull) {
+    if(isTamago) return site.marquee_tamago;
+    if(isFull)   return site.marquee_fullmoon;
+    if(Array.isArray(site.marquee_count)) {
+      let chosen = null;
+      for(const m of site.marquee_count) { if(count >= m.min) chosen = m.text; }
+      if(chosen) return chosen;
+    }
+    return site.marquee_default;
+  }
+
+  function updateTime() {
+    const now = new Date();
+    const days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+    const y=now.getFullYear(), mo=String(now.getMonth()+1).padStart(2,'0'),
+          d=String(now.getDate()).padStart(2,'0'),
+          h=String(now.getHours()).padStart(2,'0'),
+          mi=String(now.getMinutes()).padStart(2,'0');
+    document.getElementById('clockTime').innerHTML =
+      `${y}.${mo}.${d}<br>${days[now.getDay()]} ${h}:${mi}`;
+    const age = getMoonAge(now);
+    document.getElementById('moonIcon').textContent = getMoonIcon(age);
+    const isTamago = !!(window.isTamagoDay && window.isTamagoDay());
+    const isFull   = age>=13 && age<=16;
+    document.getElementById('marqueeText').textContent = pickMarquee(isTamago, isFull);
+  }
+  updateTime();
+  setInterval(updateTime, 1000);
+
+  // 時計の進み方
+  const TAMAGO_MODE = !!(window.isTamagoDay && window.isTamagoDay());
+  const DAWN   = TAMAGO_MODE ? 5 : 7;
+  const THE_HOUR  = TAMAGO_MODE ? 7 : 17;
+  const HOUR_MS       = 5500; // ひと目盛りの実時間
+  const LS_COUNT = 'utamago_clock_count';
+  const LS_VTIME = 'utamago_clock_vtime';
+  let startTime = null, running = true, rafId = null;
+  let vtime = DAWN;
+  const countEl = document.getElementById('countNum');
+
+  // URLに ?reset を付けて開くと記録を消してやり直す
+  if(/[?&]reset\b/.test(location.search)){
+    try { localStorage.removeItem(LS_COUNT); localStorage.removeItem(LS_VTIME); } catch(e){}
+    // 保存し直しを防ぐため一度ハンドラを外してから、?reset無しのURLへ移動
+    window.removeEventListener('pagehide', saveClock);
+    location.replace(location.pathname);
+    return;
+  }
+
+  // ページを移動しても状態を保つ
+  count = parseInt(localStorage.getItem(LS_COUNT) || '0', 10) || 0;
+  countEl.textContent = count;
+  const _rv = parseFloat(localStorage.getItem(LS_VTIME));
+  if(isFinite(_rv) && _rv >= DAWN && _rv < THE_HOUR) vtime = _rv;
+
+  function saveClock() {
+    try {
+      localStorage.setItem(LS_COUNT, String(count));
+      localStorage.setItem(LS_VTIME, String(vtime));
+    } catch(e){}
+  }
+
+  function setHands(time) {
+    const hourDeg = ((time % 12) / 12) * 360;   // 0deg=12時（上）
+    const minDeg  = (time % 1) * 360;
+    handHour.style.transform = `rotate(${hourDeg}deg)`;
+    handMin.style.transform  = `rotate(${minDeg}deg)`;
+  }
+  setHands(vtime);
+
+  let _lastSave = 0;
+  function tick(now) {
+    if(!running) return;
+    if(!startTime) startTime = now - (vtime - DAWN) * HOUR_MS;  // 復元した位置から継続
+    vtime = DAWN + (now - startTime) / HOUR_MS;
+    if(vtime >= THE_HOUR) {
+      vtime = THE_HOUR;
+      setHands(vtime);
+      running = false;
+      whenItStrikes();
+      return;
+    }
+    setHands(vtime);
+    if(now - _lastSave > 1000){ _lastSave = now; saveClock(); }
+    rafId = requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+  window.addEventListener('pagehide', saveClock);
+  document.addEventListener('visibilitychange', ()=>{ if(document.hidden) saveClock(); });
+
+  const MARKS = [1, 5, 25, 55];
+
+  function whenItStrikes() {
+    count++;
+    countEl.textContent = count;
+    countEl.style.animation = 'none';
+    countEl.offsetHeight;
+    countEl.style.animation = 'countPop 0.4s ease-out';
+    saveClock();
+    updateTime();
+    if(!TAMAGO_MODE && MARKS.includes(count)) crossOver(count);
+    else resetClock();
+  }
+
+  function resetClock() {
+    startTime = null; running = true;
+    vtime = DAWN;
+    setHands(DAWN);
+    saveClock();
+    requestAnimationFrame(tick);
+  }
+
+  /* ── ？？？ ── */
+  const SIZES = [9,10,11,13,15,18,22,28,34];
+  let drifting=false, domRafId=null, flashTimer=null, hushTimer=null, fragments=[];
+  const canvas    = document.getElementById('veilCanvas');
+  const murmurLayer= document.getElementById('murmurLayer');
+  const dreamTxt = document.getElementById('dreamText');
+
+  function paintVeil() {
+    if(!drifting) return;
+    const W=window.innerWidth, H=window.innerHeight;
+    canvas.width=W; canvas.height=H;
+    const ctx=canvas.getContext('2d');
+    ctx.clearRect(0,0,W,H);
+    for(let i=0;i<4+Math.floor(Math.random()*7);i++){
+      const y=Math.random()*H, h=1+Math.random()*5;
+      ctx.fillStyle=`rgba(${Math.floor(Math.random()*200)},${Math.floor(Math.random()*80)},${180+Math.floor(Math.random()*75)},${0.15+Math.random()*0.35})`;
+      ctx.fillRect((Math.random()-0.5)*30,y,W,h);
+    }
+    if(Math.random()<0.5){
+      const y=Math.random()*H, h=1+Math.floor(Math.random()*3);
+      ctx.fillStyle=`rgba(255,0,60,${0.2+Math.random()*0.3})`;
+      ctx.fillRect((Math.random()-0.5)*16,y,W,h);
+      ctx.fillStyle=`rgba(0,200,255,${0.15+Math.random()*0.25})`;
+      ctx.fillRect((Math.random()-0.5)*16,y+h,W,h);
+    }
+    for(let i=0;i<3+Math.floor(Math.random()*5);i++){
+      ctx.fillStyle=`hsla(${Math.floor(Math.random()*360)},80%,60%,${0.1+Math.random()*0.2})`;
+      ctx.fillRect(Math.random()*W,Math.random()*H,8+Math.random()*60,4+Math.random()*14);
+    }
+    if(Math.random()<0.35){
+      const y=Math.random()*H, h=4+Math.random()*18;
+      ctx.fillStyle=`rgba(${Math.floor(Math.random()*200)},0,${Math.floor(Math.random()*200)},0.12)`;
+      ctx.fillRect(0,y,W,h);
+      ctx.strokeStyle='rgba(255,255,255,0.18)'; ctx.lineWidth=1;
+      ctx.strokeRect((Math.random()-0.5)*40,y,W,h);
+    }
+    if(Math.random()<0.2){
+      ctx.fillStyle=Math.random()<0.5?'rgba(0,0,0,0.55)':'rgba(255,255,255,0.45)';
+      ctx.fillRect(Math.random()*(W-80),Math.random()*(H-30),20+Math.random()*70,8+Math.random()*20);
+    }
+    if(Math.random()<0.3){
+      ctx.strokeStyle=`rgba(200,150,255,${0.1+Math.random()*0.18})`;
+      ctx.lineWidth=1; ctx.beginPath();
+      ctx.moveTo(Math.random()*W,0); ctx.lineTo(Math.random()*W,H); ctx.stroke();
+    }
+    domRafId = requestAnimationFrame(paintVeil);
+  }
+
+  let domTimer=null;
+  function tremor() {
+    if(!drifting) return;
+    const body=document.body;
+    const r=Math.random();
+    if(r<0.1)       body.style.filter=`invert(1) hue-rotate(${Math.floor(Math.random()*360)}deg)`;
+    else if(r<0.18) body.style.filter=`hue-rotate(${Math.floor(Math.random()*360)}deg) saturate(${4+Math.random()*6})`;
+    else if(r<0.23) body.style.filter=`invert(0.8) saturate(0)`;
+    else if(r<0.27) body.style.filter=`brightness(${0.3+Math.random()*0.5})`;
+    else            body.style.filter='';
+    domTimer=setTimeout(tremor,40+Math.floor(Math.random()*80));
+  }
+
+  function gather(key) {
+    murmurLayer.innerHTML=''; fragments=[];
+    const words = [...(site.murmurs[key]||[])];
+    if(site.urgentWords[key]) {
+      const n=Math.max(2,Math.floor(words.length*0.35));
+      for(let i=0;i<n;i++) words.push('起きて');
+    }
+    words.forEach(w=>{
+      const copies=1+Math.floor(Math.random()*2);
+      for(let c=0;c<copies;c++){
+        const el=document.createElement('span');
+        el.className='wisp'+(w==='起きて'?' stir':'');
+        el.textContent=w;
+        el.style.left=(2+Math.random()*88)+'%';
+        el.style.top=(2+Math.random()*88)+'%';
+        el.style.fontSize=SIZES[Math.floor(Math.random()*SIZES.length)]+'px';
+        if(w!=='起きて'){
+          const horror=w.match(/忘れちゃう|出れなくなる|戻らないと|起きないと|起きて！/);
+          el.style.color=horror
+            ?`rgba(180,30,60,${0.65+Math.random()*0.3})`
+            :`rgba(${60+Math.floor(Math.random()*80)},30,${140+Math.floor(Math.random()*60)},${0.5+Math.random()*0.4})`;
+          if(horror) el.style.fontWeight='bold';
+        }
+        murmurLayer.appendChild(el); fragments.push(el);
+      }
+    });
+  }
+
+  function flicker() {
+    if(!drifting) return;
+    fragments.forEach(el=>el.classList.remove('on'));
+    const cnt=6+Math.floor(Math.random()*8);
+    [...fragments].sort(()=>Math.random()-0.5).slice(0,cnt).forEach((el,i)=>{
+      setTimeout(()=>{
+        el.style.left=(2+Math.random()*88)+'%';
+        el.style.top=(2+Math.random()*88)+'%';
+        el.style.fontSize=SIZES[Math.floor(Math.random()*SIZES.length)]+'px';
+        el.classList.add('on');
+      },i*15);
+    });
+    flashTimer=setTimeout(()=>{
+      fragments.forEach(el=>el.classList.remove('on'));
+      hushTimer=setTimeout(flicker,100+Math.random()*300);
+    },80+Math.random()*180);
+  }
+
+  function veilRise(key) {
+    drifting=true;
+    document.body.classList.add('drifting');
+    gather(key); paintVeil(); tremor(); flicker();
+  }
+
+  function veilFall() {
+    drifting=false;
+    if(domRafId){cancelAnimationFrame(domRafId);domRafId=null;}
+    if(domTimer){clearTimeout(domTimer);domTimer=null;}
+    if(flashTimer){clearTimeout(flashTimer);flashTimer=null;}
+    if(hushTimer){clearTimeout(hushTimer);hushTimer=null;}
+    document.body.classList.remove('drifting');
+    document.body.style.filter='';
+    canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);
+    murmurLayer.innerHTML=''; fragments=[];
+  }
+
+  // 音声は各キーごとに用意し、最初の操作（クリック/タップ/キー）で解錠する。
+  // （ブラウザは操作なしの自動再生をブロックするため）
+  const _audioCache = {};
+  let _audioUnlocked = false;
+  function _getAudio(key){
+    const src = site.lullaby[String(key)];
+    if(!src) return null;
+    if(!_audioCache[key]){
+      const a = new Audio(src);
+      a.preload = 'auto';
+      _audioCache[key] = a;
+    }
+    return _audioCache[key];
+  }
+  function unlockAudio(){
+    if(_audioUnlocked) return;
+    _audioUnlocked = true;
+    Object.keys(site.lullaby || {}).forEach(key=>{
+      const a = _getAudio(key);
+      if(!a) return;
+      // 解錠だけ行う。muted と volume:0 の両方で必ず無音にし、終わったら止めて元に戻す
+      a.muted = true;
+      a.volume = 0;
+      const restore = ()=>{ try{ a.pause(); a.currentTime = 0; }catch(e){} a.muted = false; a.volume = 1; };
+      const p = a.play();
+      if(p && p.then) p.then(restore).catch(restore); else restore();
+    });
+  }
+  ['pointerdown','mousedown','touchstart','touchend','keydown','click','wheel'].forEach(ev=>{
+    window.addEventListener(ev, unlockAudio, { once:false, passive:true });
+  });
+
+  function playSound(key) {
+    const a = _getAudio(key);
+    if(!a) return;
+    try {
+      a.muted = false;
+      a.volume = 1;
+      a.currentTime = 0;
+      a.play().catch(()=>{});
+    } catch(e){}
+  }
+
+  function crossOver(n) {
+    veilRise(n);
+    setTimeout(()=>{ veilFall(); document.body.classList.add('sunk'); }, 3000);
+    setTimeout(()=>{
+      const msg = site.reverie[String(n)] || '';
+      dreamTxt.innerHTML = msg.split('\n').join('<br>');
+      document.body.classList.add('spoken');
+      playSound(n);
+    }, 4500);
+    setTimeout(()=>{
+      document.body.classList.remove('sunk','spoken');
+      resetClock();
+    }, 8500);
+  }
+
+})();
+
+/* ── アコーディオン ── */
+function togglePost(hdr) {
+  const body=hdr.nextElementSibling, arr=hdr.querySelector('.post-arr');
+  const open=body.classList.toggle('open');
+  arr.classList.toggle('open', open);
+}
+
+/* カテゴリリンクからアコーディオンを開く */
+function openPost(idx) {
+  const cards = document.querySelectorAll('#mainContent .card');
+  // プロフィールカードを除いた記事カード（2枚目以降）
+  const postCards = Array.from(cards).filter(c => c.querySelector('.post-header'));
+  const target = postCards[idx];
+  if(!target) return;
+  const hdr = target.querySelector('.post-header');
+  const body = target.querySelector('.post-body');
+  const arr = target.querySelector('.post-arr');
+  if(body && !body.classList.contains('open')) {
+    body.classList.add('open');
+    if(arr) arr.classList.add('open');
+  }
+  target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* 初回訪問の警告ウィンドウ */
+(function(){
+  const ov = document.getElementById('warnOverlay');
+  const ok = document.getElementById('warnOk');
+  if(!ov || !ok) return;
+  // 初回のみ表示（URLに ?popup=1 を付けるとテスト用に毎回表示）
+  let seen = false;
+  try { seen = localStorage.getItem('utamago_warned') === '1'; } catch(e){}
+  const force = /[?&]popup=1\b/.test(location.search);
+  if(force || !seen) ov.classList.add('open');
+  function close(){
+    ov.classList.remove('open');
+    try { localStorage.setItem('utamago_warned','1'); } catch(e){}
+  }
+  // OKのクリックは操作扱いになり、音声解錠（window監視）も同時に行われる
+  ok.addEventListener('click', close);
+  // ×ボタン・背景クリックでも閉じる
+  const x = ov.querySelector('.xpwin-bar-x');
+  if(x) x.addEventListener('click', close);
+  ov.addEventListener('click', e=>{ if(e.target === ov) close(); });
+})();
+</script>
+
+<style>
+@keyframes countPop {
+  0%   { transform: scale(1.6); color: #e6c800; }
+  100% { transform: scale(1);   color: #6040a0; }
+}
+</style>
+
+<script>
+/* みつけてくれて ありがとう */
+console.log('%c見つかっちゃった~よく見つけたね！°˖✧◝(⁰▿⁰)◜✧˖°','color:#ef88ac;font-size:16px;font-weight:bold;');
+console.log('%c時計の針が「5」をさすまで、ここにいて。君に話しかけるから。','color:#c98aa0;');
+console.log('%c5つのページに、ぼくのひみつを隠したよ。全部集めてならべてみてね。','color:#c9b86a;');
+</script>
+
+</body>
+</html>

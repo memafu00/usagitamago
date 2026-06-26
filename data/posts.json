@@ -1,0 +1,132 @@
+[
+  {
+    "_README": "このファイルは TOPの日記 と STORYのコンテンツ の両方を管理します。下の _構造・_例 は説明用で、画面には表示されません（body も コンテンツ項目も無いため自動で除外されます）。新しい投稿は { } を増やして追加します。",
+    "_構造_TOPの日記": "body がある { } は TOP に日記として出ます。必須: id / date / day / title / body。任意: tags（配列）, comments（配列）, link。本文の改行は \\n。本文中に [文字](story) と書くとSTORYへのリンクになります。",
+    "_構造_STORYのコンテンツ": "episode と「種類の項目」がある { } は STORY に出ます。同じ episode 番号のものが1つの話にまとまり、content_order の小さい順に並びます。種類は次のどれか1つ → 横読み漫画: manga:true ／ たて読み: webtoon:true ／ 動画: video_id:\"sm...\" ／ 小説/文章: text または text_file ／ 音声: audio:\"パス\"。",
+    "_構造_非表示と準備中": "draft:true でその投稿を非表示にできる（blogでもSTORYでも）。ただし draft:true と coming_soon:true を両方付けると、blogでは非表示・STORYでは『近日公開』表示になる。エピソードのコンテンツが全部 coming_soon なら、そのエピソードまるごと準備中カードになる。一部だけ coming_soon なら、その話は公開のまま中で準備中表示。",
+    "_構造_共通の任意項目": "episode_title（話のタイトル）, episode_synopsis（あらすじ）, caption（短い説明）, title（コンテンツ名）, type_label（準備中の種別ラベル）, note（準備中の補足）, pcl:true（初音ミク登場作品。クレジット自動表示）。",
+    "_構造_画像の置き場所": "横読み漫画: images/manga/ep01-p01.png ep01-p02.png …。たて読み: images/webtoon/ep01-p01.png ep01-p02.png …。どちらも ep番号-p番号.png（pあり・2桁）で統一。枚数は書かなくてOK。フォルダにある分を自動で全枚数表示します（01から連番）。",
+    "_例_日記": { "id": "post_例", "date": "2024.05.01", "day": "Wed", "title": "タイトル", "body": "本文。\\n改行は \\\\n。\\n[STORYで読む](story) でリンク。", "tags": ["タグ"], "comments": [] },
+    "_例_漫画": { "id": "ep02_manga_例", "title": "コンテンツ名", "episode": "02", "content_order": 1, "manga": true, "caption": "短い説明" },
+    "_例_たて読み": { "id": "ep02_webtoon_例", "title": "コンテンツ名", "episode": "02", "content_order": 2, "webtoon": true, "caption": "短い説明" },
+    "_例_動画": { "id": "ep02_video_例", "title": "コンテンツ名", "episode": "02", "content_order": 3, "video_id": "sm00000000", "caption": "短い説明" },
+    "_例_小説": { "id": "ep02_novel_例", "title": "コンテンツ名", "episode": "02", "content_order": 4, "text_kind": "小説", "text_file": "data/novel/ep02.txt", "caption": "短い説明" },
+    "_例_音声": { "id": "ep02_voice_例", "title": "コンテンツ名", "episode": "02", "content_order": 5, "audio": "images/audio/ep02.mp3", "caption": "短い説明" }
+  },
+  {
+    "id": "post_001",
+    "date": "2023.03.18",
+    "day": "Sat",
+    "title": "はじめてのにっき",
+    "body": "気がついたらここにいた。\nどうやってきたのかはわからない…\n\nでもここから君に話しかけられることはわかった。\nとりあえずにっきをつけることにしたよ(*´ω`*)",
+    "tags": [
+      "はじめまして",
+      "インターネット"
+    ],
+    "link": null
+  },
+  {
+    "id": "post_002",
+    "date": "2023.03.23",
+    "day": "Thu",
+    "top_title": "動画をみつけた！",
+    "body": "ここにきた日の動画をみつけた...!\nみんなも見れるかな…？リンク貼っておくね♡\n[→ STORYページで読む](story)",
+    "tags": [
+      "動画"
+    ],
+    "link": "story",
+    "episode": "01",
+    "episode_title": "春一番じゃない",
+    "episode_synopsis": "ぼく、卯たまごは春眠によってネットの世界に迷い込んだ元人間。\nもとは現実の世界にいたみたいだけど、その時のことはほとんど忘れちゃった。\nたまに人間だったのか、うさぎのぬいぐるみだったのかわからなくなる。\nこれは 卯たまごの、はじまりのおはなし。",
+    "video_id": "sm41943587",
+    "story_title": "はじまりの動画",
+    "content_order": 1,
+    "caption": "ここにきた日のこと。みくちゃんがうたってくれました！",
+    "pcl": true,
+    "comments": [
+      {
+        "name": "管理人",
+        "date": "03.23 05:55",
+        "text": "こっちからも見れてるよ！",
+        "is_chara": false
+      },
+      {
+        "name": "卯たまご",
+        "date": "03.23 09:30",
+        "text": "ありがとう(๑´ڡ`๑)！",
+        "is_chara": true
+      }
+    ]
+  },
+  {
+    "id": "post_003",
+    "draft": true,
+    "coming_soon": true,
+    "date": "2026.XX.XX",
+    "day": "Mon",
+    "top_title": "歌ってみたよ！",
+    "body": "「春一番じゃない」をみくちゃんと いっしょに うたってみました！\n聴いてくれる嬉しいな(^▽^)\n[→ STORYページで読む](story)",
+    "tags": [
+      "動画",
+      "歌ってみた"
+    ],
+    "link": "story",
+    "episode": "01",
+    "video_id": "sm41943587",
+    "story_title": "歌ってみた",
+    "content_order": 2,
+    "type_label": "動画",
+    "title_soon": "歌ってみた",
+    "caption": "「春一番じゃない」の歌ってみた動画",
+    "note": "近日公開！",
+    "pcl": true,
+    "comments": []
+  },
+  {
+    "id": "post_004",
+    "draft": true,
+    "coming_soon": true,
+    "date": "2026.07.15",
+    "day": "Mon",
+    "top_title": "漫画になったよ！",
+    "body": "ここにきたときのこと、ちょっと思い出したからまんがにしてもらった！\n読んでみてね(*^-^*)\n[→ STORYページで見る](story)",
+    "tags": [
+      "漫画"
+    ],
+    "link": "story",
+    "episode": "01",
+    "content_order": 3,
+    "story_title": "はじまりの漫画",
+    "manga": true,
+    "type_label": "漫画",
+    "caption": "はじまりの日の漫画",
+    "note": "近日公開！",
+    "pcl": true,
+    "comments": []
+  },
+  {
+    "id": "post_005",
+    "draft": true,
+    "coming_soon": true,
+    "date": "2026.XX.XX",
+    "day": "Thu",
+    "top_title": "電車に乗ったよ",
+    "body": "たまにふと、ここに来る前のことを思い出すんだ...\nこの前電車に乗ったときの動画なんだけど、風が吹いてきて\n動画のリンク貼るね！\n[→ STORYページで読む](story)",
+    "tags": [
+      "電車",
+      "隙間風",
+      "動画"
+    ],
+    "link": "story",
+    "episode": "02",
+    "episode_title": "時つ隙間風",
+    "episode_synopsis": "ぼく、卯たまごもここにきて、もう3年も過ぎたらしい。\nここには歌とかおもしろいことで溢れていて、楽しいけど、\nたまに もといた世界のこと、思い出すんだ...\nまあ、ほとんど忘れちゃってるんだけどね..（笑）\n断片的に思い出せる時があって、懐かしい感覚だけはおぼえてるんだ。\n\nちなみに、実はこの世界でも電車に乗ることができるんだよ..\nボカロPさんが電車の曲出してくれたり、電車の動画はよくネットに乗ってるからね、そこからアクセスできるんだよ～",
+    "video_id": "sm46210047",
+    "story_title": "電車の動画",
+    "content_order": 1,
+    "type_label": "動画",
+    "caption": "電車で出かけた日のこと。みくちゃんがうたってくれました！",
+    "note": "近日公開！",
+    "pcl": true
+  }
+]

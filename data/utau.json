@@ -1,0 +1,32 @@
+[
+  {
+    "tag": "通常連続音",
+    "name": "卯 たまご",
+    "image": "images/chara/portrait.png",
+    "desc": "やわらかい声質の連続音です。数種類のブレスと語尾息を収録しています。\n※くろ州式8モーラ連続音リストと山本プー特殊音素リストを使わせていただいております。この場を借りて感謝申し上げます。",
+    "specs": [
+      "収録音階：F4",
+      "連続音",
+      "日本語"
+    ],
+    "resampler": {
+      "recommended": "moresampler",
+      "note": "推奨エンジン"
+    },
+    "samples": [
+      {
+        "title": "デモ音源",
+        "src": "images/demo/demo-01.wav"
+      },
+      {
+        "title": "音階デモ",
+        "src": "images/demo/scale.wav"
+      }
+    ],
+    "dl_url": "https://bowlroll.net/file/355470",
+    "dl_url_booth": "https://memafu00.booth.pm/items/8542970",
+    "original_tuning": "めまふ",
+    "illust": "めまふ",
+    "special_phonemes": "_あR _いR _うR\n_えR _おR _んR\n\n_あ吸 _い吸 _う吸\n_え吸 _お吸 _ん吸\n\n_あ息 _い息 _う息\n_え息 _お息 _ん息\n\n_あ長\n_い長\n_う長\n_え長\n_お長\n_ん長\n\n_息1 _息2 _息3"
+  }
+]

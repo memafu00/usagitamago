@@ -1,0 +1,142 @@
+{
+  "_メンテナンス切替": "enabled を true にすると全ページがメンテナンス画面になります",
+  "maintenance": {
+    "enabled": false,
+    "title": "メンテナンス中",
+    "message": "ただいまサイトのメンテナンス中だよ。\nしばらく経ってからまた来てね…！(つ´ω`)つ"
+  },
+  "_EPISODE準備中切替": "story_upcoming の show を true/false で準備中カードの表示を切替",
+  "story_upcoming": [
+    {
+      "ep": "02",
+      "title": "？？？",
+      "note": "つぎのおはなしを準備中だよ…！おたのしみに♪",
+      "show": false
+    }
+  ],
+  "site_title": "卯たまごのにっき",
+  "site_subtitle": "～インターネットの世界から～",
+  "nav_logo": "卯たまごのにっき",
+  "footer": "© 2026 めまふ",
+  "chara_name": "卯 たまご",
+  "chara_ruby": "うさぎたまご",
+  "chara_icon": "images/chara/icon.png",
+  "profile": [
+    { "label": "ニックネーム", "value": "卯さん（ほんとうの名前は忘れた）" },
+    { "label": "性別", "value": "忘れた" },
+    { "label": "年齢", "value": "忘れた" },
+    { "label": "誕生日", "value": "忘れた" },
+    { "label": "身長", "value": "忘れた（155cmだったような）" },
+    { "label": "体重", "value": "忘れた" },
+    { "label": "一人称", "value": "忘れた（「ぼく」が多いかも）" },
+    { "label": "髪型", "value": "ツインテール" },
+    { "label": "髪・目の色", "value": "固焼きの黄身の色" },
+    { "label": "目の形", "value": "目玉焼きのようにまんまる" },
+    { "label": "服装", "value": "パジャマ（どんな服を着て出かけてたか忘れた）" },
+    { "label": "性格", "value": "夢見がち" },
+    { "label": "好き", "value": "初音ミク、ネット、おうち、歌うこと" },
+    { "label": "嫌い", "value": "おそと" },
+    { "label": "得意", "value": "忘れる、眠る" },
+    { "label": "苦手", "value": "起きる" },
+    { "label": "持ち物", "value": "忘れた" },
+    { "label": "決めセリフ", "value": "眠ろう、記憶が尽きるまで" }
+  ],
+  "chara_catchcopy": "忘れたことは、君が上書きして。",
+  "author_name": "めまふ",
+  "author_role": "ILLUSTRATOR / COMPOSER",
+  "author_bio": "創作が好きな人間です。かわいいと奇妙なものが好み。",
+  "contact_form_url": "https://docs.google.com/forms/d/e/1FAIpQLSfLltFrJS7RMdY8JNT2ZvTB8T6jjtbWzoCtYNwj0abCj0IgFA/viewform",
+  "author_icon": "images/site/author.png",
+  "sns": {
+    "twitter": {
+      "label": "X（Twitter）",
+      "url": "https://x.com/memafu00"
+    },
+    "nicovideo": {
+      "label": "ニコニコ動画",
+      "url": "https://nicovideo.jp/user/128464661"
+    },
+    "github": {
+      "label": "GitHub",
+      "url": "https://github.com/memafu00"
+    }
+  },
+  "marquee_default": "● 卯たまごだよ~(^^♪来てくれてありがとう！",
+  "marquee_tamago": "★ きょうは たまごの日！たまごを さがしてみてね ♪ ここにいるよ ♡",
+  "marquee_fullmoon": "● 今夜は満月だよ…きれいだね ♡ 眠ろう、記憶が尽きるまで ★",
+  "marquee_count": [
+    { "min": 5, "text": "♪ ぼく、歌うのすきなんだ~♡ 歌わせてほしいな★" },
+    { "min": 15, "text": "♡ この世界はたのしいよ~！いろんな歌で溢れているんだ！いいでしょう？" },
+    { "min": 25, "text": "★ 起きなくてもいいの？ずっとここにいてくれる...？" },
+    { "min": 55, "text": "○もう戻れなくなっちゃったね...！じゃあ、ずっと一緒だ！★" }
+  ],
+  "clock_image": "images/site/clock.png",
+  "clock_center_x": 300,
+  "clock_center_y": 300,
+  "clock_viewbox": "0 0 600 600",
+  "clock_hour_length": 80,
+  "clock_min_length": 110,
+  "lullaby": {
+    "1": "images/se/01.wav",
+    "5": "images/se/05.wav",
+    "25": "images/se/25.wav",
+    "55": "images/se/55.wav"
+  },
+  "reverie": {
+    "1": "卯たまごだよ♪\nみつけたよ\n君のこと",
+    "5": "君のこと\n知ってるよ\nぼくも歌いたいな~♪",
+    "25": "ずっとここにいるね...\nこっちの世界\n来てみる？",
+    "55": "……もう帰れなくなっちゃったね\nいっしょにいよう\nずっと"
+  },
+  "murmurs": {
+    "1": [
+      "はじめまして",
+      "お名前は？",
+      "実は君のこと知ってる",
+      "ようこそ",
+      "夢で会ったことあるよね？"
+    ],
+    "5": [
+      "ずっといるね",
+      "どうしたの？",
+      "歌わせてくれる？",
+      "起きないと",
+      "歌わせてよ"
+    ],
+    "25": [
+      "起きて！",
+      "起きないと",
+      "まだここにいるの？",
+      "忘れちゃうよ",
+      "こっちにくる？",
+      "戻らないと",
+      "おそとに出れなくなるよ"
+    ],
+    "55": [
+      "こっちに来てくれたんだね",
+      "仲間だ！",
+      "ずっと一緒だね！",
+      "夢の中にいよう",
+      "おうちが一番！",
+      "ありがとう",
+      "よろしくね"
+    ]
+  },
+  "urgentWords": {
+    "1": true,
+    "5": true,
+    "25": true,
+    "55": false
+  },
+  "chara_description": "春眠によって、ネットの世界に迷い込んだ元人間。\n現実にいた頃の記憶はネットの情報で上書きされ続けている。\n人間であったことも忘れ、うさぎのぬいぐるみに姿を変えたり、ふと思い出し、人間の姿に戻ったりを繰り返している。",
+  "egg_page": {
+    "nav_label": "✦EGG✦",
+    "title": "ひみつのへや",
+    "sub": "～たまごの日～",
+    "lead": "みつけてくれて ありがとう♪\nきょうだけの、ひみつのおへや。\nたまごのおくりもの、もっていってね。",
+    "links": [
+      { "label": "おくりものをうけとる", "url": "https://drive.google.com/drive/folders/1H7dWE8GWU8k31dx5sbSFRzxpiHDGYBsy?usp=sharing" }
+    ],
+    "note": "※ このへやは たまごの日だけ あらわれます。"
+  }
+}

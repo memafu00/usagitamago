@@ -1,0 +1,2644 @@
+@import url('https://fonts.googleapis.com/css2?family=DotGothic16&family=Kaisei+Decol:wght@400;700&family=Mochiy+Pop+One&family=Hachi+Maru+Pop&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+html { scroll-behavior: smooth; }
+
+:root {
+  --purple:   #f999ba;
+  --purple2:  #df7a9c;
+  --purple3:  #ffc6d8;
+  --purple4:  #fff2f6;
+  --yellow:   #fafc9c;
+  --white:    #ffffff;
+  --text:     #6a4a58;
+  --muted:    #c98aa0;
+  --border:   #f7aec5;
+  --font-d:   'DotGothic16', sans-serif;
+  --font-k:   'Kaisei Decol', serif;
+  --nav-h:    72px;
+  --mq-h:     28px;
+}
+
+body {
+  font-family: var(--font-d);
+  font-size: 13px;
+  background-color: var(--yellow);
+  background-image: radial-gradient(circle, rgba(255,255,255,0.9) 10px, transparent 10px);
+  background-size: 40px 40px;
+  background-attachment: fixed;
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+a { color: inherit; text-decoration: none; }
+img { display: block; max-width: 100%; }
+
+/* ── ナビ ── */
+#nav {
+  background: var(--purple);
+  border-bottom: 2px solid var(--purple2);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: var(--nav-h);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+}
+.nav-logo {
+  font-family: var(--font-k);
+  font-size: 18px;
+  color: #fff;
+  letter-spacing: 0.1em;
+  text-shadow: 1px 1px 0 var(--purple2);
+}
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: 0;
+}
+.nav-links a {
+  color: #f0e8ff;
+  font-size: 13px;
+  padding: 0 20px;
+  letter-spacing: 0.12em;
+  border-left: 1px solid rgba(255,255,255,0.2);
+  cursor: pointer;
+  transition: color 0.2s;
+  display: block;
+  line-height: var(--nav-h);
+}
+.nav-links li:first-child a { border-left: none; }
+.nav-links a:hover,
+.nav-links a.active { color: #fada80; }
+
+/* ── マーキー ── */
+.marquee-bar {
+  background: var(--purple2);
+  color: #f0e8ff;
+  font-size: 13px;
+  height: var(--mq-h);
+  line-height: var(--mq-h);
+  overflow: hidden;
+  white-space: nowrap;
+  border-bottom: 2px solid var(--purple);
+  flex-shrink: 0;
+}
+.marquee-inner {
+  display: inline-block;
+  animation: mq 22s linear infinite;
+}
+@keyframes mq {
+  0%   { transform: translateX(100vw); }
+  100% { transform: translateX(-100%); }
+}
+
+/* ── ページヘッダー ── */
+.page-header {
+  background: var(--purple3);
+  border-bottom: 2px solid var(--purple);
+  padding: 14px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.page-header-deco {
+  font-size: 12px;
+  color: #fff;
+  letter-spacing: 0.18em;
+}
+.page-header-title {
+  font-family: var(--font-k);
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 1px 1px 0 var(--purple2);
+  margin: 6px 0;
+}
+.page-header-sub {
+  font-size: 12px;
+  color: #f0e8ff;
+  letter-spacing: 0.15em;
+}
+
+/* ── メインラッパー（フッターを最下部に） ── */
+.page-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── レイアウト：画面全体 ── */
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 220px;
+  gap: 0;
+  padding: 12px;
+  flex: 1;
+  width: 100%;
+}
+.main { min-width: 0; }
+.sidebar { padding-left: 12px; }
+
+/* ── ウィジェット ── */
+.widget {
+  background: #fff;
+  border: 2px solid var(--border);
+  margin-bottom: 10px;
+}
+.widget-t {
+  background: var(--border);
+  color: #fff;
+  font-size: 12px;
+  padding: 5px 10px;
+  letter-spacing: 0.1em;
+  text-shadow: 1px 1px 0 var(--purple);
+}
+.widget-b {
+  padding: 10px;
+  font-size: 13px;
+  color: #504080;
+  text-align: center;
+  line-height: 2;
+}
+
+/* ── 時計 ── */
+.clock-wrap {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 8px;
+}
+.clock-base {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.clock-needle-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* ── カード共通 ── */
+.card {
+  background: #fff;
+  border: 2px solid var(--border);
+  margin-bottom: 10px;
+}
+.card-header {
+  background: var(--border);
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.card-header-tag {
+  font-size: 13px;
+  color: #f0e8ff;
+  letter-spacing: 0.1em;
+}
+.card-header-title {
+  font-family: var(--font-k);
+  font-size: 19px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 1px 1px 0 var(--purple);
+}
+
+/* ── 記事（アコーディオン） ── */
+.post-header {
+  background: var(--border);
+  padding: 6px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+}
+.post-date { font-size: 11px; color: #f0e8ff; }
+.post-title {
+  font-family: var(--font-k);
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 1px 1px 0 var(--purple);
+}
+.post-arr { font-size: 13px; color: #f0e8ff; transition: transform 0.2s; }
+.post-arr.open { transform: rotate(90deg); }
+.post-body {
+  display: none;
+  padding: 14px;
+  font-size: 13px;
+  color: var(--text);
+  line-height: 2;
+  border-top: 1px dashed var(--border);
+}
+.post-body.open { display: block; }
+.post-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.post-tag {
+  background: #fff9c4;
+  border: 1px solid #e6c800;
+  color: #7a6000;
+  font-size: 11px;
+  padding: 2px 8px;
+}
+.post-link-btn {
+  display: inline-block;
+  margin-top: 8px;
+  background: var(--purple);
+  color: #fff;
+  font-size: 12px;
+  padding: 4px 12px;
+  cursor: pointer;
+  border: none;
+  font-family: var(--font-d);
+  letter-spacing: 0.08em;
+}
+
+/* ── コメント ── */
+.comment-wrap { margin-top: 10px; border-top: 1px dashed var(--border); padding-top: 10px; }
+.comment-label { font-size: 11px; color: var(--muted); letter-spacing: 0.1em; margin-bottom: 6px; }
+.comment {
+  background: #fef9e0;
+  border-left: 3px solid #e6c800;
+  padding: 6px 10px;
+  margin-bottom: 6px;
+  font-size: 12px;
+  color: #504080;
+  line-height: 1.8;
+}
+.comment.chara { background: #fff0f8; border-left-color: #f9b8ce; }
+.comment-name { color: var(--muted); margin-bottom: 2px; }
+.comment.chara .comment-name { color: #c060a0; }
+
+/* ── プロフィールカード（TOP） ── */
+.profile-card {
+  background: #fff;
+  border: 2px solid var(--border);
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.profile-card-header {
+  background: var(--border);
+  padding: 5px 10px;
+  font-size: 12px;
+  color: #fff;
+  letter-spacing: 0.1em;
+  text-shadow: 1px 1px 0 var(--purple);
+}
+.profile-card-body {
+  display: grid;
+  /* キャラ絵を広く：左2/5・右3/5 */
+  grid-template-columns: 2fr 3fr;
+  gap: 0;
+  min-height: 260px;
+}
+.profile-icon {
+  border-right: 2px solid var(--border);
+  overflow: hidden;
+  background: #fff9c4;
+}
+.profile-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+}
+.profile-icon-placeholder {
+  width: 100%;
+  height: 100%;
+  min-height: 260px;
+  background: #fff9c4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #a09000;
+  text-align: center;
+  line-height: 1.8;
+  padding: 8px;
+}
+.profile-info {
+  padding: 14px 14px 14px 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.profile-name {
+  font-family: var(--font-k);
+  font-size: 20px;
+  font-weight: 700;
+  color: #4a2880;
+  margin-bottom: 2px;
+}
+.profile-ruby {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.15em;
+  margin-bottom: 10px;
+}
+.profile-catchcopy {
+  font-family: var(--font-k);
+  font-size: 13px;
+  color: var(--purple2);
+  margin-bottom: 10px;
+  line-height: 1.8;
+}
+.profile-table {
+  width: 100%;
+  font-size: 12px;
+  border-collapse: collapse;
+  margin-bottom: 12px;
+}
+.profile-table tr { border-bottom: 1px dashed var(--border); }
+.profile-table td { padding: 5px 2px; color: #504080; vertical-align: top; }
+.profile-table td:first-child { color: var(--muted); width: 80px; }
+.profile-utau-btn {
+  display: block;
+  background: var(--purple);
+  color: #fff;
+  font-family: var(--font-d);
+  font-size: 12px;
+  padding: 6px 10px;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  letter-spacing: 0.08em;
+  width: 100%;
+}
+.profile-utau-btn:hover { background: var(--purple2); }
+
+/* ── UTAUカード ── */
+.utau-card-body {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 0;
+}
+.utau-portrait {
+  border-right: 2px solid var(--border);
+  overflow: hidden;
+  background: #fff9c4;
+  min-height: 260px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.utau-portrait img {
+  width: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+}
+.utau-portrait-placeholder {
+  width: 100%;
+  min-height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #a09000;
+  text-align: center;
+  line-height: 1.8;
+  padding: 10px;
+}
+.utau-info { padding: 14px; }
+.utau-desc { font-size: 13px; color: #7060a0; line-height: 1.9; margin-bottom: 10px; }
+.utau-specs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.utau-spec {
+  background: var(--purple4);
+  border: 1px solid var(--border);
+  color: var(--purple2);
+  font-size: 12px;
+  padding: 2px 8px;
+}
+.utau-resampler {
+  background: #fff9c4;
+  border: 1px solid #e6c800;
+  padding: 8px 10px;
+  margin-bottom: 10px;
+  font-size: 12px;
+  color: #7a6000;
+  line-height: 1.8;
+}
+.utau-resampler-title {
+  font-weight: 700;
+  color: #c09020;
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+.utau-dl-btn {
+  display: block;
+  width: 100%;
+  background: var(--purple);
+  color: #fff;
+  font-family: var(--font-d);
+  font-size: 13px;
+  padding: 8px;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  letter-spacing: 0.08em;
+  margin-top: 10px;
+  text-decoration: none;
+}
+.utau-dl-btn:hover { background: var(--purple2); }
+
+/* ── wavプレイヤー ── */
+.wav-player {
+  background: var(--purple4);
+  border: 1px solid var(--border);
+  padding: 10px;
+  margin-bottom: 10px;
+}
+.wav-player-label {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+.wav-sample {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px dashed var(--border);
+}
+.wav-sample:last-child { border-bottom: none; }
+.wav-play-btn {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--purple);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #fff;
+  font-size: 12px;
+  transition: background 0.2s;
+}
+.wav-play-btn:hover { background: var(--purple2); }
+.wav-play-btn.playing { background: #c4607c; }
+.wav-progress-wrap {
+  flex: 1;
+  height: 5px;
+  background: var(--border);
+  cursor: pointer;
+}
+.wav-progress { height: 100%; background: var(--purple2); width: 0%; }
+.wav-title { font-size: 12px; color: #504080; min-width: 80px; }
+.wav-time { font-size: 12px; color: var(--muted); min-width: 36px; text-align: right; }
+
+/* ── 漫画リーダー ── */
+.manga-reader {
+  background: #1a0830;
+  border: 2px solid var(--border);
+  margin-bottom: 10px;
+  max-width: 420px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.manga-stage {
+  aspect-ratio: 148 / 210;
+  overflow: hidden;
+  cursor: grab;
+  user-select: none;
+  position: relative;
+}
+.manga-stage.grabbing { cursor: grabbing; }
+.manga-strip {
+  display: flex;
+  height: 100%;
+  transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+.manga-page {
+  flex: 0 0 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+}
+.manga-page img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.manga-placeholder {
+  width: 100%; height: 100%;
+  border: 1px dashed var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--border);
+}
+.manga-placeholder-num { font-family: var(--font-k); font-size: 40px; }
+.manga-placeholder-label { font-size: 11px; letter-spacing: 0.1em; }
+.manga-nav-btn {
+  position: absolute;
+  top: 50%; transform: translateY(-50%);
+  width: 36px; height: 36px;
+  background: rgba(9,6,15,0.7);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: var(--border);
+  font-size: 18px;
+  z-index: 10;
+  transition: border-color 0.2s, color 0.2s;
+}
+.manga-nav-btn:hover { border-color: var(--purple); color: var(--purple); }
+.manga-nav-btn:disabled { opacity: 0.2; cursor: default; }
+.manga-nav-btn.prev { left: 10px; }
+.manga-nav-btn.next { right: 10px; }
+.manga-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  border-top: 1px solid var(--border);
+}
+.manga-counter { font-size: 12px; color: var(--muted); letter-spacing: 0.1em; }
+.manga-dots { display: flex; gap: 5px; }
+.manga-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--border);
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+.manga-dot.active { background: var(--purple); transform: scale(1.4); }
+.manga-hint { font-size: 11px; color: var(--muted); }
+
+/* ── NOTE ── */
+.note-section {
+  background: #fff;
+  border: 2px solid var(--border);
+  padding: 14px;
+  margin-bottom: 10px;
+}
+.note-section-title {
+  font-family: var(--font-k);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--purple2);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 6px;
+  margin-bottom: 10px;
+}
+.note-rule { font-size: 13px; color: #504080; line-height: 2.2; display: flex; gap: 8px; }
+.note-ok  { color: #5a9060; }
+.note-ng  { color: #c04060; }
+.note-any { color: #c09020; }
+.note-rule-note {
+  font-size: 12px;
+  color: #d97aa6;
+  line-height: 1.7;
+  margin: -2px 0 6px 46px;
+}
+.note-credit {
+  background: #fff9c4;
+  border: 1px solid #e6c800;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: #504080;
+  line-height: 2;
+  font-family: var(--font-k);
+}
+.note-updated { font-size: 12px; color: var(--muted); margin-bottom: 10px; letter-spacing: 0.1em; }
+
+/* ── CONTACT ── */
+.contact-icon {
+  width: 64px; height: 64px;
+  background: #fff9c4;
+  border: 2px dashed #e6c800;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  margin: 0 auto 10px;
+}
+.sns-link {
+  display: block;
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: var(--purple2);
+  cursor: pointer;
+  background: #fff;
+  transition: background 0.2s;
+  text-decoration: none;
+}
+.sns-link:hover { background: var(--purple4); }
+
+/* ── 素材グリッド ── */
+.assets-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  align-items: flex-start;
+}
+.asset-card {
+  border: 2px solid var(--border);
+  padding: 12px;
+  text-align: center;
+  background: #fff;
+  width: auto;
+  max-width: 100%;
+}
+.asset-thumb {
+  height: 300px;            /* 高さをそろえる（カードは画像の幅に合わせて伸び縮み） */
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  margin: 0 auto 8px;
+  display: block;
+  cursor: zoom-in;
+}
+.asset-thumb-placeholder {
+  height: 300px;
+  aspect-ratio: 3/4;
+  margin: 0 auto 6px;
+  background: #fff9c4;
+  border: 1px dashed #e6c800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #a09000;
+}
+.asset-name { font-size: 14px; color: #504080; margin-bottom: 4px; }
+/* 素材の拡大表示（ライトボックス） */
+.asset-zoom {
+  display: none;
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 1000;
+  background: rgba(40, 16, 64, 0.86);
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  cursor: zoom-out;
+}
+.asset-zoom.open { display: flex; }
+.asset-zoom img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 4px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+}
+.asset-zoom-close {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.9);
+  color: #6040a0;
+  font-size: 20px;
+  cursor: pointer;
+  line-height: 1;
+}
+.asset-note { font-size: 12px; color: var(--muted); margin-bottom: 6px; line-height: 1.5; }
+.asset-dl-btn {
+  display: block;
+  width: 100%;
+  background: var(--purple);
+  color: #fff;
+  font-family: var(--font-d);
+  font-size: 11px;
+  padding: 4px;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+}
+.asset-dl-btn:hover { background: var(--purple2); }
+
+/* ── ？ ── */
+.veil-canvas {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  pointer-events: none;
+}
+body.drifting .veil-canvas { display: block; }
+.murmur-layer {
+  display: none;
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 490;
+}
+body.drifting .murmur-layer { display: block; }
+.wisp {
+  position: absolute;
+  font-family: var(--font-d);
+  opacity: 0;
+  pointer-events: none;
+}
+.wisp.on { opacity: 1; }
+.wisp.stir {
+  font-family: var(--font-k);
+  font-weight: 700;
+  color: rgba(200,40,60,0.9);
+}
+/* 初回警告ウィンドウ */
+.xpwin-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  z-index: 1200;
+  background: rgba(40,12,60,0.5);
+  backdrop-filter: blur(2px);
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.xpwin-overlay.open { display: flex; }
+.xpwin {
+  width: 460px; max-width: 100%;
+  background: #fff0f6;
+  border: 1px solid #e58ab4;
+  border-radius: 8px 8px 6px 6px;
+  box-shadow: 0 12px 36px rgba(120,30,80,0.45);
+  font-family: "Tahoma", "MS PGothic", sans-serif;
+  overflow: hidden;
+  animation: xpwinPop 0.26s cubic-bezier(0.34,1.5,0.64,1);
+}
+@keyframes xpwinPop {
+  0%   { transform: scale(0.82); }
+  100% { transform: scale(1); }
+}
+.xpwin-bar {
+  background: linear-gradient(180deg,#ff9ec7 0%,#ff7fb6 8%,#f25a9b 45%,#e84690 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 6px 5px 9px;
+  font-weight: bold;
+  font-size: 13px;
+  text-shadow: 1px 1px 1px rgba(150,20,80,0.5);
+}
+.xpwin-bar-ico { margin-right: 4px; }
+.xpwin-bar-btns { display: flex; gap: 3px; }
+.xpwin-bar-btn {
+  width: 18px; height: 18px;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(180deg,#ffb3d4,#f25a9b);
+  border: 1px solid #fff;
+  border-radius: 3px;
+  font-size: 11px; line-height: 1;
+}
+.xpwin-bar-x { background: linear-gradient(180deg,#ff8a6a,#d83a1a); }
+.xpwin-body {
+  display: flex;
+  gap: 14px;
+  padding: 20px 18px 10px;
+  background: #fff0f6;
+}
+.xpwin-ico { font-size: 40px; flex-shrink: 0; color: #f0a000; filter: drop-shadow(0 1px 1px rgba(200,120,0,0.4)); }
+.xpwin-msg { font-size: 13px; color: #5a2a44; line-height: 1.6; }
+.xpwin-msg ul { margin: 0; padding-left: 18px; }
+.xpwin-msg li { margin-bottom: 8px; }
+.xpwin-foot {
+  display: flex;
+  justify-content: center;
+  padding: 12px 0 18px;
+  background: #ffe3ef;
+  border-top: 1px solid #f7c2db;
+}
+.xpwin-ok {
+  min-width: 100px;
+  padding: 6px 20px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: bold;
+  color: #a8326a;
+  background: linear-gradient(180deg,#ffffff,#ffd6e8);
+  border: 1px solid #e58ab4;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: inset 0 0 0 1px #fff, 0 1px 2px rgba(180,60,110,0.3);
+}
+.xpwin-ok:hover { background: linear-gradient(180deg,#fff,#ffc2dd); border-color: #e84690; }
+.xpwin-ok:active { background: #dcdcc8; }
+
+.fold {
+  position: fixed; inset: 0;
+  background: #000;
+  z-index: 600;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1.5s ease;
+}
+body.sunk .fold { opacity: 1; pointer-events: all; }
+.dream-card {
+  position: fixed; inset: 0;
+  z-index: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 2s ease;
+}
+body.spoken .dream-card { opacity: 1; }
+.dream-card-text {
+  font-family: var(--font-k);
+  font-size: clamp(16px, 2.5vw, 26px);
+  color: #d0c0f0;
+  text-align: center;
+  line-height: 2.8;
+  letter-spacing: 0.2em;
+  padding: 24px;
+}
+
+/* ── フッター：常に最下部 ── */
+#footer {
+  background: var(--purple);
+  border-top: 2px solid var(--purple2);
+  padding: 12px;
+  text-align: center;
+  font-size: 12px;
+  color: #f0e8ff;
+  letter-spacing: 0.1em;
+  margin-top: auto;
+  flex-shrink: 0;
+}
+
+/* ── ハンバーガー（スマホのみ） ── */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 4px;
+}
+.hamburger span {
+  display: block;
+  width: 24px; height: 2px;
+  background: #f0e8ff;
+  transition: all 0.3s;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.drawer-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 90;
+}
+.drawer-overlay.open { display: block; }
+
+/* ── スマホ対応 ── */
+@media (max-width: 768px) {
+  :root { --nav-h: 56px; }
+  .hamburger { display: flex; }
+  .nav-links {
+    position: fixed;
+    top: 0; right: -100%;
+    width: 70vw; max-width: 280px;
+    height: 100vh;
+    background: rgba(64,32,96,0.97);
+    flex-direction: column;
+    padding: 80px 0 40px;
+    border-left: 2px solid var(--border);
+    transition: right 0.3s cubic-bezier(0.4,0,0.2,1);
+    z-index: 200;
+  }
+  .nav-links.open { right: 0; }
+  .nav-links li:first-child a { border-left: none; }
+  .nav-links a {
+    line-height: 1;
+    padding: 16px 24px;
+    font-size: 14px;
+    border-left: none;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .nav-logo { font-size: 14px; }
+  .layout {
+    grid-template-columns: 1fr;
+    padding: 8px;
+  }
+  .sidebar { padding-left: 0; margin-top: 10px; }
+  .profile-card-body { grid-template-columns: 1fr; min-height: auto; }
+  .profile-icon { border-right: none; border-bottom: 2px solid var(--border); height: 200px; }
+  .utau-card-body { grid-template-columns: 120px 1fr; }
+  .assets-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+  .asset-thumb, .asset-thumb-placeholder { height: 220px; }
+}
+
+/* ── サイドバーLINKの文字サイズ強制 ── */
+.widget-b a {
+  font-size: 13px !important;
+  color: var(--muted);
+  display: block;
+  margin-bottom: 4px;
+}
+.widget-b a:hover { color: var(--purple2); }
+
+/* ── プロフィールアイコン ── */
+.profile-icon {
+  border-right: 2px solid var(--border);
+  overflow: hidden;
+  background: #fff9c4;
+  /* 正方形を確保 */
+  aspect-ratio: 1;
+  min-width: 0;
+}
+.profile-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+}
+.profile-icon-placeholder {
+  width: 100%;
+  height: 100%;
+  min-height: 200px;
+  background: #fff9c4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  color: #a09000;
+  text-align: center;
+  line-height: 1.8;
+  padding: 10px;
+}
+
+/* ── 作者アイコン：正方形 ── */
+.author-icon-wrap {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px dashed #e6c800;
+  margin: 0 auto 10px;
+  background: #fff9c4;
+}
+.author-icon-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── NOTE その他欄の文字サイズ ── */
+.note-section p,
+.note-section div {
+  font-size: 13px;
+}
+
+/* ============================================================
+   漫画リーダー（PC見開き・スマホ1ページ）
+   ============================================================ */
+.manga-reader {
+  background: #1a0830;
+  border: 2px solid var(--border);
+  margin-bottom: 12px;
+  width: 100%;
+  max-width: none;
+}
+/* PC：見開き（2ページ横並び） */
+.manga-stage {
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+  user-select: none;
+  /* 見開き: A5比率の2枚横並び */
+  aspect-ratio: 296 / 210;
+  width: 100%;
+}
+.manga-strip {
+  display: flex;
+  height: 100%;
+  /* 見開き時は2ページ分で1スロット */
+  transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+/* 見開きのスプレッド（2ページ1セット） */
+.manga-spread {
+  flex: 0 0 100%;
+  height: 100%;
+  display: flex;
+  gap: 2px;
+}
+.manga-spread-page {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  background: #0d0010;
+}
+.manga-spread-page img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+.manga-spread-page.empty {
+  background: #0a000c;
+}
+
+/* スマホ：1ページ */
+@media (max-width: 768px) {
+  .manga-stage {
+    aspect-ratio: 148 / 210;
+    cursor: grab;
+  }
+  .manga-stage.grabbing { cursor: grabbing; }
+  .manga-spread {
+    flex: 0 0 100%;
+    height: 100%;
+    display: flex;
+    gap: 0;
+  }
+  .manga-spread-page {
+    flex: 1;
+  }
+  /* スマホでは見開きの右ページを非表示 */
+  .manga-spread-page:nth-child(2) {
+    display: none;
+  }
+}
+
+/* 全画面ボタン */
+.manga-fullscreen-btn {
+  background: rgba(64,32,96,0.8);
+  border: 1px solid var(--border);
+  color: #f0e8ff;
+  font-size: 13px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-family: var(--font-d);
+  letter-spacing: 0.05em;
+  transition: background 0.2s;
+}
+.manga-fullscreen-btn:hover { background: var(--purple); }
+
+/* 全画面モーダル */
+.manga-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  background: #000;
+  z-index: 1000;
+  flex-direction: column;
+}
+.manga-modal.open { display: flex; }
+.manga-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: rgba(64,32,96,0.9);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.manga-modal-title { font-size: 13px; color: #f0e8ff; letter-spacing: 0.1em; }
+.manga-modal-close {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 1300;
+  background: linear-gradient(180deg,#ffd9e6,#f999ba 62%,#ef88ac);
+  color: #fff;
+  border: 2px solid #fff;
+  border-radius: 999px;
+  padding: 7px 18px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: var(--font-d);
+  box-shadow: 0 3px 0 #e589a6;
+  text-shadow: 1px 1px 0 #d9759a;
+}
+.manga-modal-close:hover { filter: brightness(1.05); }
+.manga-modal-stage {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.manga-modal-strip {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+.manga-modal-spread {
+  flex: 0 0 100%;
+  height: 100%;
+  display: flex;
+  gap: 2px;
+}
+.manga-modal-page {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+}
+.manga-modal-page img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+.manga-modal-page.empty { opacity: 0; }
+.manga-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 10px;
+  background: rgba(64,32,96,0.9);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.manga-modal-btn {
+  background: var(--purple); border: none;
+  color: #fff; font-size: 18px; width: 40px; height: 40px;
+  cursor: pointer; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+.manga-modal-btn:hover { background: var(--purple2); }
+.manga-modal-btn:disabled { opacity: 0.3; cursor: default; }
+.manga-modal-counter { font-size: 13px; color: #f0e8ff; min-width: 80px; text-align: center; }
+
+/* ============================================================
+   プロフィールカード
+   ============================================================ */
+.profile-card-body {
+  grid-template-columns: 260px 1fr !important;
+  min-height: 320px;
+}
+.profile-info {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.profile-name {
+  font-family: var(--font-k);
+  font-size: 24px;
+  font-weight: 700;
+  color: #4a2880;
+  margin-bottom: 0;
+}
+.profile-ruby {
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: 0.15em;
+}
+.profile-desc {
+  font-size: 12px;
+  color: #7060a0;
+  line-height: 1.9;
+  border-left: 3px solid var(--border);
+  padding-left: 10px;
+  margin: 4px 0;
+}
+/* プロフィール表 */
+.profile-table-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0 12px;
+  font-size: 12px;
+}
+.profile-table-grid .p-row {
+  display: flex;
+  gap: 6px;
+  padding: 4px 0;
+  border-bottom: 1px dashed var(--border);
+  align-items: baseline;
+}
+.profile-table-grid .p-label {
+  color: var(--muted);
+  min-width: 75px;
+  flex-shrink: 0;
+  font-size: 11px;
+}
+.profile-table-grid .p-value {
+  color: var(--text);
+  flex: 1;
+}
+.profile-catchcopy {
+  font-family: var(--font-k);
+  font-size: 14px;
+  color: var(--purple2);
+  line-height: 1.8;
+  padding: 6px 10px;
+  background: var(--purple4);
+  border-left: 3px solid var(--purple);
+}
+
+/* ============================================================
+   CLOCKウィジェット文字サイズUP
+   ============================================================ */
+.widget-b { font-size: 13px !important; }
+#clockTime { font-size: 12px !important; }
+#moonIcon { font-size: 18px !important; }
+#countNum { font-size: 20px !important; }
+
+/* ============================================================
+   UTAUページ立ち絵を大きく
+   ============================================================ */
+.utau-card-body {
+  grid-template-columns: 240px 1fr;
+}
+.utau-portrait {
+  min-height: 320px;
+}
+.special-phonemes {
+  background: #f5f0ff;
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #504080;
+  line-height: 2;
+  font-family: 'Courier New', monospace;
+  margin-top: 6px;
+  white-space: pre-wrap;
+}
+
+/* ============================================================
+   プロフィールカード
+   ============================================================ */
+.profile-card-body {
+  grid-template-columns: 220px 1fr !important;
+  min-height: 0 !important;
+  align-items: stretch;
+}
+.profile-icon {
+  aspect-ratio: auto !important;
+  height: 100%;
+  min-height: 200px;
+}
+.profile-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+}
+.profile-info {
+  padding: 12px 14px;
+  gap: 8px;
+  overflow: hidden;
+}
+/* プロフィール表 */
+.profile-table-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0 10px;
+  font-size: 11px;
+}
+.profile-table-grid .p-row {
+  padding: 3px 0;
+  border-bottom: 1px dashed var(--border);
+}
+.profile-table-grid .p-label {
+  font-size: 10px;
+  min-width: 0;
+  display: block;
+}
+.profile-table-grid .p-value {
+  font-size: 11px;
+  display: block;
+  color: var(--text);
+  font-weight: 500;
+}
+.profile-name { font-size: 22px; }
+.profile-desc { font-size: 11px; line-height: 1.8; }
+.profile-catchcopy { font-size: 13px; }
+
+/* ============================================================
+   UTAUカード：再生バーをコンパクトに
+   ============================================================ */
+.wav-sample {
+  gap: 6px;
+  padding: 5px 0;
+}
+.wav-progress-wrap {
+  flex: 1 1 auto;  /* 範囲ギリギリまで伸ばす */
+  min-width: 0;
+  height: 4px;
+}
+/* タイトルを上の行に出して再生バーを横幅いっぱいに */
+.wav-sample { flex-wrap: wrap !important; row-gap: 2px !important; }
+.wav-title { flex: 0 0 100% !important; min-width: 0 !important; }
+.wav-title { min-width: 70px; font-size: 11px; }
+.wav-time { min-width: 30px; font-size: 11px; }
+
+/* UTAUカード：原音設定・推奨エンジンをコンパクトに */
+.utau-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.utau-meta-item {
+  background: var(--purple4);
+  border: 1px solid var(--border);
+  padding: 3px 8px;
+  font-size: 11px;
+  color: var(--purple2);
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.utau-meta-label { color: var(--muted); font-size: 12px; }
+
+/* ============================================================
+   漫画リーダー：1画面に収まるサイズ・見開きのすき間なし
+   ============================================================ */
+.manga-reader {
+  width: 100%;
+  max-width: none;
+}
+.manga-stage {
+  /* 画面高さ基準でサイズを制限 */
+  aspect-ratio: auto !important;
+  height: min(60vh, 500px);
+  width: 100%;
+}
+/* 見開きのすき間なし */
+.manga-spread {
+  gap: 0 !important;
+}
+.manga-spread-page {
+  padding: 0 !important;
+  background: #000 !important;
+}
+.manga-spread-page img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+/* 空ページも幅を持つが見えない */
+.manga-spread-page.empty {
+  background: #000 !important;
+  opacity: 0;
+}
+/* スマホ */
+@media (max-width: 768px) {
+  .manga-stage {
+    height: min(55vh, 420px);
+  }
+}
+
+/* ============================================================
+   プロフィールカード
+   ============================================================ */
+.profile-card-body {
+  grid-template-columns: 200px 1fr !important;
+  min-height: 0 !important;
+  align-items: stretch;
+}
+/* アイコン */
+.profile-icon {
+  aspect-ratio: 1 / 1 !important;
+  width: 200px !important;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-right: 2px solid var(--border);
+  background: #fff9c4;
+  align-self: stretch;
+}
+.profile-icon img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: top center !important;
+  display: block;
+}
+.profile-icon-placeholder {
+  width: 100%;
+  height: 100%;
+  min-height: 200px;
+}
+.profile-info {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow: hidden;
+}
+/* キャラ名 */
+.profile-name {
+  font-family: var(--font-k);
+  font-size: 28px !important;
+  font-weight: 700;
+  color: #2a1060;
+  line-height: 1.2;
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 8px;
+  margin-bottom: 2px;
+}
+.profile-ruby {
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: 0.15em;
+  margin-top: -2px;
+  margin-bottom: 6px;
+}
+/* 説明文 */
+.profile-desc {
+  font-size: 11px;
+  color: #7060a0;
+  line-height: 1.7;
+  border-left: 2px solid var(--border);
+  padding-left: 8px;
+  margin-bottom: 4px;
+}
+/* プロフィール表 */
+.profile-table-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 0 18px;
+  font-size: 12px;
+  padding-left: 0;
+}
+.profile-table-grid .p-row {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  padding: 4px 0;
+  border-bottom: 1px solid #e8e0f8;
+  align-items: baseline;
+}
+.profile-table-grid .p-label {
+  color: var(--muted);
+  font-size: 10px;
+  flex-shrink: 0;
+  font-weight: 700;
+}
+.profile-table-grid .p-value {
+  color: var(--text);
+  font-size: 12px;
+  flex: 1 1 auto;
+  min-width: 0;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+}
+.profile-catchcopy {
+  font-family: var(--font-k);
+  font-size: 12px;
+  color: var(--purple2);
+  padding: 5px 8px;
+  background: var(--purple4);
+  border-left: 3px solid var(--purple);
+  margin-top: 4px;
+}
+.profile-note {
+  font-size: 11px;
+  color: #a98fc8;
+  line-height: 1.6;
+  margin-top: 8px;
+}
+
+/* ============================================================
+   UTAUカード：立ち絵を大きく
+   ============================================================ */
+.utau-card-body {
+  grid-template-columns: 280px 1fr !important;
+}
+.utau-portrait {
+  min-height: 300px;
+}
+.utau-info {
+  padding: 10px 12px;
+}
+.utau-desc { font-size: 14px; margin-bottom: 8px; }
+.utau-meta-row { margin-bottom: 8px; gap: 6px; }
+.utau-meta-item { font-size: 13px; padding: 3px 8px; }
+
+/* ============================================================
+   漫画見開き：完全にくっつける・右から左読み
+   ============================================================ */
+.manga-spread {
+  gap: 0 !important;
+  flex-direction: row-reverse !important; /* 右から左：右ページが視覚的に左に */
+}
+.manga-spread-page {
+  padding: 0 !important;
+  background: #000 !important;
+  display: flex;
+  align-items: stretch;
+}
+.manga-spread-page img {
+  width: 100%;
+  height: 100%;
+  object-fit: fill !important; /* 完全に領域を埋める */
+  display: block;
+}
+.manga-spread-page.empty {
+  background: #000 !important;
+}
+/* モーダルも同様 */
+.manga-modal-spread {
+  gap: 0 !important;
+  flex-direction: row-reverse !important;
+}
+.manga-modal-page {
+  padding: 0 !important;
+  background: #000 !important;
+  display: flex;
+  align-items: stretch;
+}
+.manga-modal-page img {
+  width: 100%;
+  height: 100%;
+  object-fit: fill !important;
+  display: block;
+}
+.manga-modal-page.empty {
+  background: #000 !important;
+  opacity: 0;
+}
+
+/* スマホでは通常の左から右でOK（1ページなので関係ない） */
+@media (max-width: 768px) {
+  .manga-spread {
+    flex-direction: row !important;
+  }
+  .manga-modal-spread {
+    flex-direction: row !important;
+  }
+}
+
+/* ============================================================
+   漫画見開き：縦横比を保ち、ページ間の余白をなくす
+   ============================================================ */
+.manga-spread {
+  gap: 0 !important;
+  flex-direction: row-reverse !important;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+}
+.manga-spread-page {
+  padding: 0 !important;
+  background: transparent !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  flex: 1;
+}
+/* 縦横比を変えずに最大サイズで表示 */
+.manga-spread-page img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto !important;
+  height: 100% !important;
+  object-fit: contain !important; /* 縦横比を絶対に変えない */
+  display: block;
+}
+.manga-spread-page.empty {
+  background: transparent !important;
+  flex: 1;
+}
+/* モーダルも同様 */
+.manga-modal-spread {
+  gap: 0 !important;
+  flex-direction: row-reverse !important;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+}
+.manga-modal-page {
+  padding: 0 !important;
+  background: transparent !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  flex: 1;
+}
+.manga-modal-page img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  display: block;
+}
+.manga-modal-page.empty {
+  background: transparent !important;
+  flex: 1;
+}
+/* スマホは1ページ通常表示 */
+@media (max-width: 768px) {
+  .manga-spread { flex-direction: row !important; }
+  .manga-modal-spread { flex-direction: row !important; }
+  .manga-spread-page img { height: auto !important; width: 100% !important; }
+  .manga-modal-page img { height: auto !important; width: 100% !important; }
+}
+
+/* ============================================================
+   プロフィールカード：☆PROFILE☆復活・正方形アイコン
+   ============================================================ */
+.profile-card-header {
+  background: var(--border);
+  padding: 5px 10px;
+  font-size: 12px;
+  color: #fff;
+  letter-spacing: 0.1em;
+  text-shadow: 1px 1px 0 var(--purple);
+  display: block;
+}
+/* プロフィールカード */
+.profile-card-body {
+  grid-template-columns: 160px 1fr !important;
+  min-height: 0 !important;
+  align-items: stretch;
+}
+.profile-icon {
+  width: 160px !important;
+  /* 幅＝高さ */
+  aspect-ratio: 1 / 1 !important;
+  overflow: hidden;
+  border-right: 2px solid var(--border);
+  background: #fff9c4;
+  align-self: flex-start; /* 正方形を保つために高さを自動に */
+  flex-shrink: 0;
+}
+.profile-icon img {
+  width: 160px !important;
+  height: 160px !important;
+  object-fit: cover !important;
+  object-position: top center;
+  display: block;
+}
+/* テキスト部分 */
+.profile-info {
+  padding: 10px 12px 10px 24px;
+  gap: 6px;
+}
+.profile-name { font-size: 24px !important; }
+
+/* ============================================================
+   UTAUカード：テキスト右余白を減らす
+   ============================================================ */
+.utau-card-body {
+  grid-template-columns: 260px 1fr !important;
+}
+.utau-info { padding: 10px 12px; }
+
+/* ============================================================
+   文字サイズの調整
+   ============================================================ */
+/* UTAU注意書き・素材・お問い合わせ */
+.utau-notice { font-size: 13px !important; }
+.utau-section-label { font-size: 13px !important; }
+.asset-name { font-size: 15px !important; }
+.asset-note { font-size: 13px !important; }
+/* CONTACTお問い合わせ本文 */
+.contact-body-text { font-size: 13px !important; }
+/* ウィジェット内リンク */
+.widget-b, .widget-b a, .widget-b div, .widget-b span {
+  font-size: 13px !important;
+}
+
+/* ============================================================
+   プロフィール画像サイズ
+   ============================================================ */
+
+/* プロフィールアイコン：正方形・サイズ＝左右比率を1つの数値で調整 */
+/* ┌──────────────────────────────────────────────┐
+   │ ★この数値を変えると画像の大きさ（＝左右の比率）が変わります │
+   　　大きくする → 画像が大きく＆テキスト欄が狭く　　　　　　　　 │
+   　　小さくする → 画像が小さく＆テキスト欄が広く　　　　　　　　 │
+   └──────────────────────────────────────────────┘ */
+.profile-card-body {
+  --profile-img: 360px;            /* ★画像サイズ（幅＝高さの正方形） */
+  --profile-img-h: 360px;          /* 幅と同じ値で正方形を保つ */
+  grid-template-columns: var(--profile-img) 1fr !important;
+  display: grid !important;
+  align-items: start !important;
+}
+.profile-icon {
+  width: var(--profile-img) !important;
+  height: var(--profile-img-h) !important;
+  aspect-ratio: unset !important;
+  overflow: hidden;
+  border-right: 2px solid var(--border);
+  background: #fff9c4;
+  flex-shrink: 0;
+  display: block;
+}
+.profile-icon img {
+  width: var(--profile-img) !important;
+  height: var(--profile-img-h) !important;
+  object-fit: cover !important;
+  object-position: top center !important;
+  display: block;
+}
+.profile-icon-placeholder {
+  width: var(--profile-img) !important;
+  height: var(--profile-img-h) !important;
+  min-height: unset !important;
+}
+
+/* 漫画：縦横比を絶対に維持・ページ間余白なし */
+.manga-spread {
+  display: flex !important;
+  height: 100% !important;
+  gap: 0 !important;
+  flex-direction: row-reverse !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #000;
+}
+.manga-spread-page {
+  flex: 1 !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  /* 両端の余白は0・中央のすき間も0 */
+  background: #000 !important;
+  overflow: hidden;
+}
+.manga-spread-page img {
+  /* 縦横比を絶対に変えない */
+  max-width: 100% !important;
+  max-height: 100% !important;
+  width: auto !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  display: block !important;
+  margin: 0 !important; /* ページ間の余白なし */
+}
+.manga-spread-page.empty {
+  background: #000 !important;
+}
+
+/* スマホは通常表示 */
+@media (max-width: 768px) {
+  .manga-spread {
+    flex-direction: row !important;
+  }
+  .manga-spread-page img {
+    width: 100% !important;
+    height: auto !important;
+  }
+}
+
+/* UTAUカード：境目を右に・テキスト余白削減 */
+.utau-card-body {
+  grid-template-columns: 260px 1fr !important;
+  display: grid !important;
+}
+.utau-info {
+  padding: 10px 12px !important;
+  min-width: 0 !important;
+}
+
+/* 文字サイズの調整 */
+.layout a,
+.widget-b a,
+.widget-b span,
+.widget-b div {
+  font-size: 13px !important;
+}
+.note-contact-text,
+.contact-body-text,
+.utau-notice {
+  font-size: 13px !important;
+}
+
+/* ============================================================
+   見開きの中央の余白を消す（左右ページを連結）
+   ページ画像は flex で中央寄せされているため、内側へ寄せて連結する。
+   row-reverse: nth-child(1)=右ページ→内側(左)へ／nth-child(2)=左ページ→内側(右)へ
+   ============================================================ */
+@media (min-width: 769px) {
+  .manga-spread-page:nth-child(1),
+  .manga-modal-page:nth-child(1) {
+    justify-content: flex-start !important;
+  }
+  .manga-spread-page:nth-child(2),
+  .manga-modal-page:nth-child(2) {
+    justify-content: flex-end !important;
+  }
+  /* 最終ページが1枚だけの見開きは空ページを畳んで中央寄せ */
+  .manga-spread:has(.empty) .manga-spread-page.empty,
+  .manga-modal-spread:has(.empty) .manga-modal-page.empty {
+    flex: 0 0 0 !important;
+  }
+  .manga-spread:has(.empty) .manga-spread-page:nth-child(1),
+  .manga-modal-spread:has(.empty) .manga-modal-page:nth-child(1) {
+    flex: 1 !important;
+    justify-content: center !important;
+  }
+}
+
+/* ============================================================
+   UTAUカード：立ち絵
+   ============================================================ */
+.utau-card-body {
+  grid-template-columns: 395px 1fr !important;
+}
+.utau-portrait {
+  align-items: flex-start !important; /* 上揃え：立ち絵を固定サイズに */
+}
+.utau-portrait img {
+  width: 100% !important;
+  height: auto !important;        /* 列幅基準の固定高さ→「もっと見る」で展開しても変わらない */
+  object-fit: contain !important;
+  object-position: top center !important;
+}
+.utau-info {
+  padding: 9px 8px !important;     /* 文字の横余白を狭く */
+}
+
+/* 収録特殊音素：折りたたみ＋「もっと見る」 */
+.phonemes-box-wrap {
+  position: relative;
+  max-height: 88px;                /* 数行だけ表示 */
+  overflow: hidden;
+  transition: max-height 0.35s ease;
+}
+.phonemes-box-wrap.expanded {
+  max-height: 1200px;
+}
+.phonemes-box-wrap:not(.expanded)::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 34px;
+  background: linear-gradient(to bottom, rgba(245,240,255,0), #f5f0ff 92%);
+  pointer-events: none;
+}
+.phonemes-toggle {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  padding: 4px;
+  background: #f5f0ff;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  cursor: pointer;
+  color: #9070c8;
+  font-size: 11px;
+  font-family: inherit;
+  letter-spacing: 0.05em;
+}
+.phonemes-toggle:hover {
+  background: #ede5ff;
+  color: #6040a0;
+}
+
+/* ============================================================
+   テーマ：イエロー水玉 × パステルピンク
+   ============================================================ */
+:root {
+  --font-k: 'Mochiy Pop One', 'Kaisei Decol', sans-serif;
+}
+
+/* 背景：イエロー #FAFC9C ＋白の水玉 */
+body {
+  background-color: #fafc9c !important;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.95) 9px, transparent 10px) !important;
+  background-size: 42px 42px !important;
+  background-attachment: fixed !important;
+}
+
+/* イラストのクレジット（立ち絵・素材） */
+.art-credit {
+  font-family: 'DotGothic16', monospace;
+  font-size: 10px;
+  color: #b48bd6;
+  text-align: right;
+  margin-top: 4px;
+  letter-spacing: 0.04em;
+  opacity: 0.9;
+}
+.art-credit-center { text-align: center; }
+
+#nav {
+  background: linear-gradient(180deg,#ffcadb 0%,#f999ba 62%,#ef88ac 100%) !important;
+  border-bottom: 3px solid #fff !important;
+  box-shadow: 0 3px 0 #ffd0de, 0 6px 14px rgba(223,122,156,0.28) !important;
+}
+.nav-logo {
+  color: #fff !important;
+  text-shadow: 0 0 6px #ffe1ef, 2px 2px 0 #ef9cc2 !important;
+  letter-spacing: 0.08em !important;
+}
+.nav-links a { color:#fff7fb !important; text-shadow:1px 1px 0 #ef9cc2 !important; }
+.nav-links a:hover, .nav-links a.active {
+  color:#fff3a8 !important;
+  text-shadow:0 0 8px #fff3a8, 1px 1px 0 #ef9cc2 !important;
+}
+
+/* マーキー */
+.marquee-bar {
+  background: linear-gradient(90deg,#f999ba,#eaa6d2,#f999ba) !important;
+  color:#fff !important;
+  border-bottom:2px solid #ffd0de !important;
+  text-shadow:0 0 5px rgba(255,255,255,0.5);
+}
+
+/* ページヘッダー */
+.page-header {
+  background: linear-gradient(160deg,#ffd9e6,#ffc6d8 45%,#fafc9c) !important;
+  border-bottom: 3px solid #f999ba !important;
+}
+.page-header-deco { color:#f2a0c2 !important; text-shadow:0 0 5px #fff; }
+.page-header-title {
+  color:#fff !important;
+  text-shadow: 0 0 10px #ffd6ec, 2px 2px 0 #ef9cc2, -1px -1px 0 #ef9cc2 !important;
+  letter-spacing: 0.05em !important;
+}
+.page-header-sub { color:#e08bb0 !important; text-shadow:0 0 4px #fff; }
+
+/* 見出しバー：パステルピンクのグラデ */
+.widget-t, .card-header, .post-header, .profile-card-header {
+  background: linear-gradient(90deg,#ffc0d4,#f999ba 60%,#ef88ac) !important;
+  color:#fff !important;
+  text-shadow: 1px 1px 0 #df7a9c !important;
+}
+
+/* パネル枠 */
+.widget, .card, .profile-card {
+  border: 2.5px solid #f7aec5 !important;
+  border-radius: 18px !important;
+  box-shadow: 0 4px 0 #f1ec92, 0 8px 18px rgba(223,122,156,0.18) !important;
+  overflow: hidden;
+}
+
+/* ボタン：パステルピンクのつやグラデ＋ピル型 */
+.post-link-btn, .profile-utau-btn, .utau-dl-btn, .asset-dl-btn,
+.phonemes-toggle, .manga-fullscreen-btn, .sns-link {
+  background: linear-gradient(180deg,#ffd9e6,#f999ba 62%,#ef88ac) !important;
+  color:#fff !important;
+  border: 2px solid #fff !important;
+  border-radius: 999px !important;
+  box-shadow: 0 3px 0 #e589a6, 0 5px 10px rgba(223,122,156,0.25) !important;
+  text-shadow: 1px 1px 0 #d9759a !important;
+  font-weight: bold !important;
+  transition: transform .12s ease, filter .12s ease, box-shadow .12s ease !important;
+}
+.post-link-btn:hover, .profile-utau-btn:hover, .utau-dl-btn:hover, .asset-dl-btn:hover,
+.phonemes-toggle:hover, .manga-fullscreen-btn:hover, .sns-link:hover {
+  filter: brightness(1.04) !important;
+  transform: translateY(-1px) !important;
+  color:#fff !important;
+  background: linear-gradient(180deg,#ffe4ee,#ffaac8 62%,#f593b4) !important;
+}
+.post-link-btn:active, .profile-utau-btn:active, .utau-dl-btn:active, .asset-dl-btn:active,
+.phonemes-toggle:active, .manga-fullscreen-btn:active, .sns-link:active {
+  transform: translateY(2px) !important;
+  box-shadow: 0 1px 0 #e589a6 !important;
+}
+.sns-link { display:block; text-align:center; margin-bottom:8px; padding:8px 12px; }
+
+/* タグ：パステルイエローのピル（背景となじむ） */
+.post-tag {
+  background:#fbfcb0 !important;
+  border:1.5px solid #ece288 !important;
+  color:#9a8a2a !important;
+  border-radius:999px !important;
+  font-weight:bold;
+}
+.utau-spec, .utau-meta-item {
+  border-radius:999px !important;
+  border-color:#f7aec5 !important;
+}
+
+/* キャラ絵パネルの背景＝ページ背景（黄＋白水玉）と連続させる */
+.profile-icon, .utau-portrait, .profile-icon-placeholder, .utau-portrait-placeholder {
+  background-color:#fafc9c !important;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.95) 9px, transparent 10px) !important;
+  background-size:42px 42px !important;
+  background-attachment:fixed !important;
+}
+
+/* 収録特殊音素ボックスもパステルピンクに */
+.special-phonemes { background:#fff4fa !important; border-color:#f7aec5 !important; }
+.phonemes-box-wrap:not(.expanded)::after {
+  background: linear-gradient(to bottom, rgba(255,244,250,0), #fff4fa 92%) !important;
+}
+
+/* 名前・キャッチコピー */
+.profile-name {
+  color:#ff5fa8 !important;
+  background:none !important;
+  -webkit-background-clip:border-box !important;
+  background-clip:border-box !important;
+  -webkit-text-fill-color:#ff5fa8 !important;
+  -webkit-text-stroke:0 #fff !important;
+  text-shadow:
+    0.5px 0.5px 0 #fff, -0.5px 0.5px 0 #fff, 0.5px -0.5px 0 #fff, -0.5px -0.5px 0 #fff,
+    0 2px 3px rgba(220,90,150,0.3) !important;
+  filter:none !important;
+}
+.profile-catchcopy { color:#e895ba !important; }
+
+/* スマホメニューのドロワーもパステルピンクに */
+@media (max-width:768px){
+  .nav-links.open, .nav-links {
+    background: linear-gradient(180deg, rgba(255,182,214,0.97), rgba(255,166,207,0.97)) !important;
+  }
+}
+
+/* ============================================================
+   装飾：テキスチャ・キラキラ
+   ============================================================ */
+@keyframes yumeTwinkle { 0%,100%{opacity:.4;transform:scale(.82)} 50%{opacity:1;transform:scale(1.18)} }
+@keyframes yumeFloat   { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+@keyframes yumeShimmer { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+@keyframes yumeDrift   { from{background-position:0 0, 40px 60px} to{background-position:240px 240px, 280px 300px} }
+
+/* 背景レイヤー */
+body::before{
+  content:"";
+  position:fixed; inset:0; z-index:-1; pointer-events:none;
+  background-image:
+    radial-gradient(circle, #ffffff 1.6px, transparent 2.4px),
+    radial-gradient(circle, #ffd0ea 1.2px, transparent 2.2px);
+  background-size: 130px 130px, 96px 96px;
+  background-position: 0 0, 40px 60px;
+  opacity:.55;
+}
+
+/* ページヘッダー：グラデーション背景（静止） */
+.page-header{
+  background: linear-gradient(120deg,#ffd9e6,#ffc6d8,#e9d4ff,#cdefff,#fafc9c,#ffd9e6) !important;
+  background-size: 100% 100% !important;
+}
+/* マーキーをホログラム配色に（静止） */
+.marquee-bar{
+  background: linear-gradient(90deg,#f999ba,#c9a6f0,#9ad8f0,#f9dc9c,#f999ba) !important;
+  background-size: 100% 100% !important;
+}
+
+/* パネルの影 */
+.widget, .card, .profile-card{
+  box-shadow:0 4px 0 #f1ec92, 0 8px 18px rgba(223,122,156,0.18), 0 0 22px rgba(201,166,240,0.28) !important;
+}
+
+/* ボタンにラメのふち */
+.profile-utau-btn, .utau-dl-btn{
+  box-shadow:0 3px 0 #e589a6, 0 0 0 3px #fff, 0 0 14px rgba(201,166,240,0.55) !important;
+}
+
+/* 時計の浮遊アニメーション */
+.clock-wrap{
+  animation: yumeFloat 5.5s ease-in-out infinite;
+  filter: drop-shadow(0 0 9px rgba(255,214,236,0.85));
+}
+
+/* プロフィール説明文 */
+.profile-desc{
+  font-size: 14px !important;
+  line-height: 1.9 !important;
+}
+
+/* UTAUカードのタグ（通常連続音 等）を白ピルで見やすく */
+.card-header-tag{
+  color:#ef88ac !important;
+  background:#fff !important;
+  padding:3px 11px !important;
+  border-radius:999px !important;
+  font-weight:bold !important;
+  box-shadow:0 2px 0 #e589a6 !important;
+  text-shadow:none !important;
+  letter-spacing:0.06em !important;
+  flex-shrink:0;
+}
+
+/* ============================================================
+   STORY：エピソードの区切りを明確に＋あらすじ（説明文）ボックス
+   ============================================================ */
+.story-ep-card{
+  margin-bottom:30px !important;
+  border:3px solid #f7aec5 !important;
+  box-shadow:0 4px 0 #f1ec92, 0 8px 18px rgba(223,122,156,0.2), 0 0 0 4px #fff !important;
+}
+/* カード間の仕切り線 */
+.story-ep-card:not(:last-child)::after{
+  content:"☆ ・ﾟ:* ☆ *:ﾟ・ ☆ ・ﾟ:* ☆";
+  display:block;
+  text-align:center;
+  color:#f2a0c2;
+  font-size:13px;
+  letter-spacing:0.15em;
+  margin:18px auto -14px;
+  text-shadow:0 0 5px #fff;
+}
+/* エピソード番号バッジ */
+.story-ep-header{ display:flex; align-items:center; gap:12px; padding:9px 12px !important; }
+.story-ep-badge{
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  min-width:56px; padding:5px 8px;
+  background:#fff; border-radius:12px; line-height:1;
+  box-shadow:0 2px 0 #e589a6;
+  flex-shrink:0;
+}
+.story-ep-lbl{ font-size:8px; letter-spacing:0.16em; color:#df7a9c; margin-bottom:3px; }
+.story-ep-no{
+  font-family:var(--font-k); font-size:24px; color:#ef88ac;
+  text-shadow:none !important;
+}
+.story-ep-titlewrap{ flex:1; min-width:0; }
+.story-ep-header .post-title{ font-size:17px; }
+
+/* あらすじ（説明文）ボックス */
+.story-synopsis{
+  background:#fff6fb;
+  border:2px dashed #ffc2dd;
+  border-radius:12px;
+  padding:11px 13px;
+  margin-bottom:12px;
+}
+.story-synopsis-label{
+  font-size:11px; letter-spacing:0.12em; color:#e08bb0; font-weight:bold; margin-bottom:5px;
+}
+.story-synopsis-text{
+  font-size:13px; color:#7a5a68; line-height:1.95;
+}
+
+/* エピソード内の子（漫画・動画）サブセクション */
+.story-child-head{
+  display:flex; align-items:center; gap:9px; margin-bottom:9px;
+}
+.story-child-type{
+  flex-shrink:0;
+  font-size:11px; font-weight:bold; color:#fff; letter-spacing:0.08em;
+  background:linear-gradient(180deg,#ffb6da,#ef88ac);
+  padding:3px 12px; border-radius:999px;
+  box-shadow:0 2px 0 #e589a6;
+}
+.story-child-title{
+  font-family:var(--font-k); font-size:15px; color:#d9759a;
+}
+.story-child-sep{
+  border-top:2px dashed #ffd0e6;
+  margin:18px 0;
+}
+
+/* コンテンツ単位の準備中（coming_soon:true） */
+.story-child-soon{
+  opacity:0.9;
+  background:repeating-linear-gradient(45deg,#fff6fb,#fff6fb 8px,#ffeef6 8px,#ffeef6 16px);
+  border:1.5px dashed #f0b8d4;
+  border-radius:8px;
+  padding:12px 14px;
+}
+.story-child-soon-badge{
+  margin-left:auto;
+  background:#f7a8c8;
+  color:#fff;
+  font-size:11px;
+  font-weight:bold;
+  padding:2px 10px;
+  border-radius:10px;
+  white-space:nowrap;
+}
+
+/* 準備中エピソードカード */
+.story-ep-upcoming{
+  opacity:0.85;
+  filter:saturate(0.7);
+}
+.story-ep-upcoming .post-header{
+  background:linear-gradient(90deg,#e7c8d8,#dcb8cc 60%,#d0a8c0) !important;
+}
+.story-ep-upcoming .story-ep-no{ color:#c08aa6; }
+.story-ep-soon{
+  flex-shrink:0;
+  font-size:12px; font-weight:bold; color:#fff; letter-spacing:0.1em;
+  background:rgba(255,255,255,0.35);
+  border:1.5px solid #fff;
+  padding:5px 14px; border-radius:999px;
+  text-shadow:1px 1px 0 #b88aa4;
+}
+.story-ep-soon-note{
+  font-size:11px; color:#fff; margin-top:3px; text-shadow:1px 1px 0 #c8a0b8;
+}
+
+/* ============================================================
+   メンテナンス画面（全ページ共通 / maintenance.js が表示）
+   ============================================================ */
+.maintenance-screen{
+  position:fixed; inset:0; z-index:1000000;
+  display:flex; align-items:center; justify-content:center;
+  padding:24px;
+  background-color:#fafc9c;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.95) 9px, transparent 10px);
+  background-size:42px 42px;
+}
+.maintenance-card{
+  max-width:440px; width:100%;
+  background:#fff;
+  border:3px solid #f7aec5;
+  border-radius:20px;
+  box-shadow:0 6px 0 #ffd0e6, 0 12px 28px rgba(223,122,156,0.25);
+  padding:30px 26px;
+  text-align:center;
+}
+.maintenance-deco{ color:#f2a0c2; font-size:13px; letter-spacing:0.1em; }
+.maintenance-icon{ font-size:48px; margin:14px 0 8px; }
+.maintenance-title{
+  font-family:var(--font-k);
+  font-size:26px;
+  color:#ef88ac;
+  text-shadow:0 0 8px #ffd6ec;
+  margin-bottom:14px;
+}
+.maintenance-msg{
+  font-size:14px; line-height:2; color:#7a5a68; margin-bottom:16px;
+}
+
+/* エピソードのあらすじ（最初に表示）と CONTENTS 見出し */
+.story-ep-synopsis{
+  background:#fff;
+  border:2px solid #ffc2dd;
+}
+.story-contents-label{
+  font-family:var(--font-k);
+  font-size:12px;
+  letter-spacing:0.14em;
+  color:#df7a9c;
+  margin:4px 0 12px;
+  text-shadow:0 0 4px #fff;
+}
+
+/* STORY冒頭のフィクション注意書き */
+.story-disclaimer{
+  background:#fff;
+  border:2px dashed #ffc2dd;
+  border-radius:12px;
+  padding:10px 14px;
+  margin-bottom:18px;
+  font-size:12px;
+  line-height:1.85;
+  color:#a87a92;
+  text-align:center;
+}
+/* コンテンツ（漫画・動画）の簡単な説明欄 */
+.story-child-caption{
+  font-size:13px;
+  line-height:1.8;
+  color:#7a5a68;
+  margin:-2px 0 10px;
+}
+/* 小説・文章コンテンツ */
+.story-text{
+  margin-top:8px;
+  padding:14px 16px;
+  background:#fffdf8;
+  border:1.5px solid #f0d8ea;
+  border-radius:8px;
+}
+.story-text-body{
+  font-size:14px;
+  line-height:2.0;
+  color:#5a4858;
+  text-align:justify;
+  white-space:normal;
+  max-height:420px;
+  overflow-y:auto;
+  padding-right:6px;
+}
+.story-text-body::-webkit-scrollbar{ width:8px; }
+.story-text-body::-webkit-scrollbar-thumb{ background:#f0c4e0; border-radius:4px; }
+.story-text-body::-webkit-scrollbar-track{ background:#fdf2f9; border-radius:4px; }
+
+/* webtoon（縦スクロール漫画） */
+.webtoon-strip{
+  max-height:70vh;
+  overflow-y:auto;
+  border:2px solid #c4a8f5;
+  border-radius:8px;
+  background:#1a0830;
+  text-align:center;
+}
+.webtoon-strip .webtoon-page{
+  display:block;
+  width:100%;
+  max-width:520px;
+  margin:0 auto;
+  vertical-align:top;
+}
+.webtoon-placeholder{
+  width:100%;
+  max-width:520px;
+  margin:0 auto;
+  min-height:760px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:60px 10px;
+  background:repeating-linear-gradient(#fff9c4,#fff9c4 38px,#fdf0a8 38px,#fdf0a8 76px);
+  color:#a09000;
+  font-size:12px;
+  border-bottom:2px dashed #e6c800;
+  box-sizing:border-box;
+}
+.webtoon-strip::-webkit-scrollbar{ width:10px; }
+.webtoon-strip::-webkit-scrollbar-thumb{ background:#9070c8; border-radius:5px; }
+.webtoon-strip::-webkit-scrollbar-track{ background:#2a1248; }
+/* webtoon 全画面オーバーレイ */
+.webtoon-overlay{
+  display:none; position:fixed; inset:0; width:100vw; height:100vh; height:100dvh; z-index:1200;
+  background:#1a0830;
+}
+.webtoon-overlay.open{ display:block; }
+/* スマホ：閲覧中は閉じるボタンを隠し、画面タップで出す */
+.webtoon-overlay .video-overlay-close{ transition: opacity 0.25s ease; }
+@media (max-width: 768px){
+  .webtoon-overlay.ctrl-hidden .video-overlay-close{ opacity:0; pointer-events:none; }
+}
+.webtoon-overlay-inner{
+  width:100%; height:100%;
+  overflow-y:auto;
+  text-align:center;
+  -webkit-overflow-scrolling:touch;
+}
+.webtoon-overlay-inner .webtoon-page{
+  display:block; width:100%; max-width:680px; margin:0 auto; vertical-align:top;
+}
+.webtoon-overlay-inner .webtoon-placeholder{
+  width:100%; max-width:680px; margin:0 auto;
+  min-height:900px; display:flex; align-items:center; justify-content:center;
+  padding:80px 10px;
+  background:repeating-linear-gradient(#fff9c4,#fff9c4 44px,#fdf0a8 44px,#fdf0a8 88px);
+  color:#a09000;
+  font-size:13px; box-sizing:border-box;
+}
+/* PCLクレジット表記 */
+.pcl-credit{
+  margin-top:10px;
+  padding:8px 12px;
+  background:#fff;
+  border:1.5px solid #ffd0e6;
+  border-radius:10px;
+  font-size:11px;
+  line-height:1.7;
+  color:#a87a92;
+  text-align:center;
+}
+.pcl-credit a{ color:#df7a9c; text-decoration:underline; word-break:break-all; }
+
+/* 動画の全画面：オーバーレイで画面いっぱい（スマホ横向き含む） */
+.video-overlay{
+  display:none;
+  position:fixed; inset:0; width:100vw; height:100vh; height:100dvh; z-index:99999;
+  background:#000;
+  flex-direction:column;
+}
+.video-overlay.open{ display:flex; }
+.video-overlay-close{
+  position:fixed;
+  top:12px;
+  right:12px;
+  transition:opacity 0.25s ease;
+  z-index:1300;
+  background:linear-gradient(180deg,#ffd9e6,#f999ba 62%,#ef88ac);
+  color:#fff;
+  border:2px solid #fff;
+  border-radius:999px;
+  padding:7px 18px;
+  font-family:var(--font-d);
+  font-size:14px;
+  font-weight:bold;
+  cursor:pointer;
+  flex-shrink:0;
+  box-shadow:0 3px 0 #e589a6;
+  text-shadow:1px 1px 0 #d9759a;
+}
+.video-overlay-close:hover{ filter:brightness(1.05); }
+.video-overlay-inner{
+  flex:1; min-height:0;
+  display:flex; align-items:center; justify-content:center;
+  position:relative;
+}
+.video-overlay-inner iframe{ width:100%; height:100%; }
+/* 透明タップレイヤー：操作ボタンが隠れている間だけ画面全体のタップを受ける。
+   表示中は無効化してプレイヤー操作を通す。 */
+.video-tap-catch{ position:absolute; inset:0; z-index:2; }
+.video-overlay:not(.ctrl-hidden) .video-tap-catch{ pointer-events:none; }
+@media (max-width: 768px){
+  .video-overlay.ctrl-hidden .video-overlay-close{ opacity:0; pointer-events:none; }
+}
+
+/* ============================================================
+   スマホ表示の調整
+   ============================================================ */
+@media (max-width: 768px){
+  /* プロフィール：縦積み・画像はカード幅いっぱいの正方形 */
+  .profile-card-body{
+    grid-template-columns: 1fr !important;
+    --profile-img: 100% !important;
+    min-height: 0 !important;
+  }
+  .profile-icon{
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 1 / 1 !important;
+    min-height: 0 !important;
+    border-right: none !important;
+    border-bottom: 2px solid var(--border) !important;
+  }
+  .profile-icon img,
+  .profile-icon-placeholder{
+    width: 100% !important;
+    height: 100% !important;
+  }
+  .profile-icon img{ object-fit: cover !important; }
+  .profile-desc{ font-size: 14px !important; }
+
+  /* UTAU：立ち絵とテキストを縦積み */
+  .utau-card-body{
+    grid-template-columns: 1fr !important;
+  }
+  .utau-portrait{
+    border-right: none !important;
+    border-bottom: 2px solid var(--border) !important;
+  }
+  .utau-portrait img{
+    width: 100% !important;
+    height: auto !important;
+    max-height: 75vh !important;
+    object-fit: contain !important;
+  }
+  .utau-info{ padding: 12px 14px !important; }
+
+  /* 全画面モーダル：1ページを画面いっぱいに表示 */
+  .manga-modal-page img{
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+  }
+}
+
+/* ============================================================
+   スマホ：漫画の全画面モーダルで1ページを画面いっぱいに
+   ヘッダー／フッターを半透明オーバーレイにしてステージを全画面化
+   ============================================================ */
+@media (max-width: 768px){
+  .manga-modal-header,
+  .manga-modal-footer{
+    position: absolute !important;
+    left: 0; right: 0;
+    z-index: 5;
+    background: rgba(40,16,64,0.5) !important;
+    border: none !important;
+    backdrop-filter: blur(2px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+  .manga-modal-header{ top: 0; }
+  .manga-modal-footer{ bottom: 0; }
+  .manga-modal-close{ transition: opacity 0.25s ease; }
+  /* スクロール／閲覧中は操作ボタンを隠す（画面タップで出す） */
+  .manga-modal.ctrl-hidden .manga-modal-header{ opacity: 0; pointer-events: none; transform: translateY(-100%); }
+  .manga-modal.ctrl-hidden .manga-modal-footer{ opacity: 0; pointer-events: none; transform: translateY(100%); }
+  .manga-modal.ctrl-hidden .manga-modal-close{ opacity: 0; pointer-events: none; }
+  .manga-modal-stage{
+    position: absolute !important;
+    inset: 0 !important;
+    flex: none !important;
+  }
+  .manga-modal-page{ padding: 0 !important; }
+  .manga-modal-page.empty{ display: none !important; }
+  .manga-modal-page img{
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
+  }
+}
+
+/* ============================================================
+   tamago-day テーマ
+   marquee.js が <html class="tamago-day"> を付けた日だけ適用。
+   ============================================================ */
+/* 背景 */
+.tamago-day body {
+  background-color: #fff6e9 !important;
+  background-image:
+    radial-gradient(ellipse 10px 13px at 22px 24px, #ffc6d8 99%, transparent 100%),
+    radial-gradient(ellipse 10px 13px at 66px 62px, #bfe3ff 99%, transparent 100%),
+    radial-gradient(ellipse 10px 13px at 66px 20px, #dcc8ff 99%, transparent 100%),
+    radial-gradient(ellipse 10px 13px at 22px 64px, #c6f0d4 99%, transparent 100%),
+    radial-gradient(ellipse 10px 13px at 44px 44px, #fff1a6 99%, transparent 100%) !important;
+  background-size: 88px 88px !important;
+  background-attachment: fixed !important;
+}
+/* tamago-day の背景レイヤー */
+.tamago-day body::before {
+  background-image:
+    radial-gradient(circle, #ffffff 1.8px, transparent 2.6px),
+    radial-gradient(circle, #ffd0ea 1.4px, transparent 2.4px) !important;
+  opacity: 0.85 !important;
+}
+/* tamago-day の立ち絵・アイコン背景 */
+.tamago-day .profile-icon,
+.tamago-day .utau-portrait,
+.tamago-day .profile-icon-placeholder,
+.tamago-day .utau-portrait-placeholder {
+  background-color: #fff6e9 !important;
+  background-image:
+    radial-gradient(ellipse 9px 12px at 22px 24px, #ffc6d8 99%, transparent 100%),
+    radial-gradient(ellipse 9px 12px at 66px 62px, #bfe3ff 99%, transparent 100%),
+    radial-gradient(ellipse 9px 12px at 66px 20px, #dcc8ff 99%, transparent 100%),
+    radial-gradient(ellipse 9px 12px at 22px 64px, #c6f0d4 99%, transparent 100%),
+    radial-gradient(ellipse 9px 12px at 44px 44px, #fff1a6 99%, transparent 100%) !important;
+  background-size: 88px 88px !important;
+}
+/* tamago-day のマーキー */
+.tamago-day .marquee-bar {
+  background: linear-gradient(180deg,#fffdf3 0%,#fff3cf 48%,#ffe2a0 100%) !important;
+  color: #de9036 !important;
+  border-bottom-color: #ffd27e !important;
+  text-shadow: 0 1px 0 #fffdf3, 0 0 1px #fff6dc;
+  font-weight: 700;
+}
+/* tamago-day のナビ */
+.tamago-day #nav {
+  background: linear-gradient(90deg,#f9a8c4,#e0aee6,#aecdf2) !important;
+  border-bottom-color: #ffc6d8 !important;
+}
+.tamago-day .nav-logo { text-shadow: 1px 1px 0 #df7a9c; }
+/* tamago-day のページヘッダー */
+.tamago-day .page-header {
+  background: linear-gradient(135deg,#ffe2ee,#ece0ff,#deefff,#c6f0d4,#fff1a6) !important;
+  border-bottom-color: #ffc6d8 !important;
+  position: relative;
+}
+.tamago-day .page-header-deco {
+  color: #c98aa0;
+  text-shadow: 0 1px 0 #fff;
+}
+/* ヘッダー右上のバッジ */
+.tamago-day .page-header::after {
+  content: "○ たまごの日 ○";
+  position: absolute;
+  top: 8px;
+  right: 14px;
+  font-family: var(--font-k);
+  font-size: 12px;
+  color: #b86a86;
+  background: rgba(255,255,255,0.7);
+  border: 1px solid #ffc6d8;
+  border-radius: 12px;
+  padding: 3px 10px;
+  letter-spacing: 0.04em;
+}
+@media (max-width: 600px) {
+  .tamago-day .page-header::after { display: none; }
+}
+/* カード類のふちをパステルピンクに寄せる */
+.tamago-day .widget,
+.tamago-day .post,
+.tamago-day .utau-card,
+.tamago-day .asset-card {
+  border-color: #ffc6d8 !important;
+}

@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STORY</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<script src="maintenance.js"></script>
+<script src="marquee.js"></script>
+<script src="pull-refresh.js"></script>
+<!-- ✶ ぼくのひみつ [2/5]「ー」：タンポポの綿毛の花言葉は「別離」なんだって。 -->
+<div class="drawer-overlay" id="drawerOverlay"></div>
+
+<!-- 全画面漫画モーダル -->
+<div class="manga-modal" id="mangaModal">
+  <div class="manga-modal-header">
+    <div class="manga-modal-title" id="modalTitle">漫画</div>
+    <button class="manga-modal-close" onclick="closeModal()">✕ 閉じる</button>
+  </div>
+  <div class="manga-modal-stage">
+    <div class="manga-modal-strip" id="modalStrip"></div>
+  </div>
+  <div class="manga-modal-footer">
+    <button class="manga-modal-btn" id="modalNext" onclick="modalGo(1)">←</button>
+    <div class="manga-modal-counter" id="modalCounter">1 / 1</div>
+    <button class="manga-modal-btn" id="modalPrev" onclick="modalGo(-1)">→</button>
+  </div>
+</div>
+
+<nav id="nav">
+  <div class="nav-inner">
+    <div class="nav-logo" id="navLogo">読込中...</div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">TOP</a></li>
+      <li><a href="story.html" class="active">STORY</a></li>
+      <li><a href="utau.html">UTAU</a></li>
+      <li><a href="note.html">NOTE</a></li>
+      <li><a href="contact.html">CONTACT</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="メニュー">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="marquee-bar"><span class="marquee-inner" id="marqueeText">読込中...</span></div>
+<div class="page-body">
+<div class="page-header">
+  <div class="page-header-deco">☆.。.:*・°☆.。.:*・°☆.。.:*・°☆.。.:*・°☆</div>
+  <div class="page-header-title">STORY</div>
+  <div class="page-header-sub">～卯たまごのおはなし～</div>
+  <div class="page-header-deco">☆.。.:*・°☆.。.:*・°☆.。.:*・°☆.。.:*・°☆</div>
+</div>
+<div class="layout">
+  <div class="main" id="mainContent">読込中...</div>
+  <div class="sidebar">
+    <div class="widget">
+      <div class="widget-t">☆ EPISODE ☆</div>
+      <div class="widget-b" style="text-align:left;" id="episodeWidget">読込中…</div>
+    </div>
+    <div class="widget">
+      <div class="widget-t">☆ LINK ☆</div>
+      <div class="widget-b" style="text-align:left;">
+        <a href="utau.html" style="color:#9070c8;display:block;margin-bottom:4px;">UTAU音源</a>
+        <a href="index.html" style="color:#9070c8;display:block;">TOPに戻る</a>
+      </div>
+    </div>
+  </div>
+</div>
+</div><!-- /.page-body -->
+<footer id="footer"></footer>
+
+<script>
+async function loadJSON(path){ const r=await fetch(path); return r.json(); }
+function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+const isMobile = () => window.innerWidth <= 768;
+
+// フォルダ内のページ画像を1枚ずつ確認して、ある分だけ数える（番号は2桁・連番）
+function imgExists(src){
+  return new Promise(res=>{ const im=new Image(); im.onload=()=>res(true); im.onerror=()=>res(false); im.src=src; });
+}
+async function countPages(folder, ep, withP){
+  let n = 0;
+  while(n < 300){
+    const nn = String(n+1).padStart(2,'0');
+    const file = `ep${ep}-p${nn}.png`;
+    if(await imgExists(`images/${folder}/${file}`)) n++;
+    else break;
+  }
+  return n;
+}
+
+/* ハンバーガー */
+(function(){
+  const btn=document.getElementById('hamburger'),links=document.getElementById('navLinks'),overlay=document.getElementById('drawerOverlay');
+  function toggle(o){btn.classList.toggle('open',o);links.classList.toggle('open',o);overlay.classList.toggle('open',o);}
+  btn.addEventListener('click',()=>toggle(!btn.classList.contains('open')));
+  overlay.addEventListener('click',()=>toggle(false));
+  links.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>toggle(false)));
+})();
+
+/* ============================================================
+   漫画リーダー
+   PC：見開き2ページ・キー/ボタン操作
+   スマホ：1ページ・スワイプ操作
+   ============================================================ */
+
+// 全エピソードのリーダー状態を保持（buildReader が設定、openModal が参照）
+const readerStates = {};
+
+/* ── 全画面モーダル ── */
+let modalEp = null;
+
+function openModal(ep) {
+  modalEp = ep;
+  const state = readerStates[ep];
+  if(!state) return;
+
+  const modal = document.getElementById('mangaModal');
+  const strip = document.getElementById('modalStrip');
+  const counter = document.getElementById('modalCounter');
+
+  document.getElementById('modalTitle').textContent = `EP${ep}`;
+  strip.innerHTML = '';
+
+  let cur = 0;
+  const total = state.total;
+  const isSP = isMobile();
+  // モーダル：PC=見開き2ページ／スマホ=1ページずつ全画面
+  const spreads = [];
+  if(isSP){
+    for(let i=1;i<=total;i++) spreads.push([i]);
+  } else {
+    for(let i=1;i<=total;i+=2) {
+      if(i+1<=total) spreads.push([i,i+1]);
+      else spreads.push([i]);
+    }
+  }
+  const totalSpreads = spreads.length;
+
+  spreads.forEach(pages => {
+    const spread = document.createElement('div');
+    spread.className = 'manga-modal-spread';
+    pages.forEach(pg => {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'manga-modal-page';
+      const img = document.createElement('img');
+      img.src = `images/manga/ep${ep}-p${String(pg).padStart(2,'0')}.png`;
+      img.alt = `P${pg}`;
+      img.onerror = ()=>{img.style.display='none';};
+      pageDiv.appendChild(img);
+      spread.appendChild(pageDiv);
+    });
+    if(pages.length===1 && !isSP){
+      const e=document.createElement('div');e.className='manga-modal-page empty';spread.appendChild(e);
+    }
+    strip.insertBefore(spread, strip.firstChild); // 逆順に積む（次ページが左から出る）
+  });
+
+  function updateModal(animate) {
+    // 逆順ストリップ：表示位置＝末尾からの距離。進むと右へ動き次ページが左から出現
+    const pos = totalSpreads - 1 - cur;
+    strip.style.transition = (animate === false) ? 'none' : 'transform 0.35s cubic-bezier(0.4,0,0.2,1)';
+    strip.style.transform = `translateX(-${pos*100}%)`;
+    document.getElementById('modalPrev').disabled = cur===0;
+    document.getElementById('modalNext').disabled = cur===totalSpreads-1;
+    const pages = spreads[cur];
+    const label = pages.length===2 ? `P${pages[0]}〜${pages[1]}` : `P${pages[0]}`;
+    counter.textContent = `${label} / ${total}`;
+  }
+
+  window.modalGo = function(dir) {
+    cur = Math.max(0, Math.min(totalSpreads-1, cur+dir));
+    updateModal(true);
+  };
+
+  updateModal(false);
+  modal.classList.add('open');
+  // スマホ：最初は操作ボタンを隠す（タップで出す）。PCは常に表示。
+  if(isSP) modal.classList.add('ctrl-hidden');
+  else modal.classList.remove('ctrl-hidden');
+  document.body.style.overflow = 'hidden';
+  document.body.style.transform = ''; // 引っ張り演出の残留transformで全画面がずれるのを防ぐ
+
+  // スマホ：スワイプでページ送り（右スワイプ＝次ページ＝右とじ）／軽いタップで操作ボタンの表示切替
+  const mstage = modal.querySelector('.manga-modal-stage');
+  if(mstage && !mstage._swipeBound){
+    mstage._swipeBound = true;
+    let sx=0, sy=0, drag=false;
+    mstage.addEventListener('pointerdown', e=>{ if(!isMobile())return; sx=e.clientX; sy=e.clientY; drag=true; mstage.setPointerCapture(e.pointerId); });
+    mstage.addEventListener('pointerup', e=>{
+      if(!drag)return; drag=false;
+      const dx=e.clientX-sx, dy=e.clientY-sy;
+      if(Math.abs(dx)>40 && Math.abs(dx)>Math.abs(dy)) window.modalGo(dx>0?1:-1); // 横スワイプ＝ページ送り
+      else if(Math.abs(dx)<10 && Math.abs(dy)<10) modal.classList.toggle('ctrl-hidden'); // タップ＝操作ボタン表示切替
+    });
+  }
+}
+
+function closeModal() {
+  document.getElementById('mangaModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// モーダルキーボード操作
+document.addEventListener('keydown', e => {
+  const modal = document.getElementById('mangaModal');
+  if(modal.classList.contains('open')) {
+    // 右から左読み：←が次ページ（進む）・→が前ページ（戻る）
+    if(e.key==='ArrowLeft'||e.key==='ArrowDown') window.modalGo(1);
+    if(e.key==='ArrowRight'||e.key==='ArrowUp') window.modalGo(-1);
+    if(e.key==='Escape') closeModal();
+  }
+});
+
+// PC キーボードでリーダー操作
+let activeEp = null;
+document.addEventListener('keydown', e => {
+  const modal = document.getElementById('mangaModal');
+  if(modal.classList.contains('open')) return;
+  if(!activeEp || !readerStates[activeEp]) return;
+  // 右とじ：←で次ページ（進む）、→で前ページ（戻る）
+  if(e.key==='ArrowLeft')  readerStates[activeEp].goTo(readerStates[activeEp].cur()+1);
+  if(e.key==='ArrowRight') readerStates[activeEp].goTo(readerStates[activeEp].cur()-1);
+});
+
+/* ── メイン ── */
+(async function(){
+  const [site, posts] = await Promise.all([loadJSON('data/site.json'), loadJSON('data/posts.json')]);
+  document.getElementById('navLogo').textContent = site.nav_logo;
+  document.getElementById('footer').textContent = site.footer;
+  document.getElementById('marqueeText').textContent = pickMarqueeText(site);
+
+  // draft:true の投稿は非公開（表示しない）。下書きとして残せる。
+  // draft は非表示。ただし coming_soon の投稿は draft でも STORY には「近日公開」として残す
+  // （こうすると blog は draft で隠しつつ、STORY では近日公開表示にできる）
+  const visiblePosts = posts.filter(p => !p.draft || p.coming_soon);
+
+  const storyPosts = visiblePosts.filter(p => p.manga || p.manga_pages || p.webtoon || p.webtoon_pages || p.video_id || p.audio || p.text || p.text_file || p.coming_soon);
+
+  // 準備中エピソード：posts.json の upcoming:true ＋ site.json の story_upcoming(show:true)
+  const upcomingList = visiblePosts.filter(p => p.upcoming).map(p => ({ ep: p.episode || '？', title: p.episode_title || p.title || '？？？', note: p.note || '' }))
+    .concat((site.story_upcoming || []).filter(u => u.show).map(u => ({ ep: u.ep, title: u.title, note: u.note || '' })));
+
+  // 文章を txt ファイルから読む場合（text_file）はここで読み込んで text に入れる
+  await Promise.all(storyPosts.map(async p => {
+    if(p.text_file && !p.text){
+      try { p.text = await (await fetch(p.text_file)).text(); }
+      catch(e){ p.text = '（本文を読み込めませんでした）'; }
+    }
+  }));
+
+  // 漫画・webtoon はフォルダ内のページを数えて、その話の全枚数を表示する
+  // （manga / webtoon を true にすれば枚数指定は不要。数字を入れればその枚数で固定）
+  await Promise.all(storyPosts.map(async p => {
+    const ep = p.episode || '01';
+    if(p.manga === true || p.manga_pages > 0){
+      const c = await countPages('manga', ep, true);
+      p.manga_pages = c > 0 ? c : (p.manga_pages || 0);
+    }
+    if(p.webtoon === true || p.webtoon_pages > 0){
+      const c = await countPages('webtoon', ep, true);
+      p.webtoon_pages = c > 0 ? c : (p.webtoon_pages || 0);
+    }
+  }));
+
+  if(!storyPosts.length) {
+    document.getElementById('mainContent').innerHTML =
+      '<div class="card" style="padding:16px;font-size:13px;color:#9070c8;text-align:center;">準備中…(´ω`)</div>';
+    document.getElementById('episodeWidget').innerHTML = '準備中…';
+    return;
+  }
+
+  // エピソード単位でグループ化（同じ episode 番号の漫画・動画を1つにまとめる）
+  const groups = [];
+  const byEp = {};
+  storyPosts.forEach((p, idx) => {
+    const ep = p.episode || String(idx+1).padStart(2,'0');
+    if(!byEp[ep]) { byEp[ep] = { ep, title:'', synopsis:'', posts:[] }; groups.push(byEp[ep]); }
+    if(p.episode_title && !byEp[ep].title) byEp[ep].title = p.episode_title;
+    if(p.episode_synopsis && !byEp[ep].synopsis) byEp[ep].synopsis = p.episode_synopsis;
+    byEp[ep].posts.push(p);
+  });
+  // エピソード内の表示順（content_order 昇順。未指定は元の順序）
+  groups.forEach(g => g.posts.sort((a,b)=>(a.content_order??99)-(b.content_order??99)));
+
+  // エピソードのコンテンツが「全部 coming_soon」なら、その話まるごと近日公開カードにする。
+  // 一部だけ coming_soon の場合は、話は公開のままで、そのコンテンツだけ中で「準備中」表示。
+  const allSoon = g => g.posts.length>0 && g.posts.every(p => p.coming_soon);
+  const liveGroups = groups.filter(g => !allSoon(g));
+  const soonGroups = groups.filter(g => allSoon(g)).map(g => {
+    const noteSrc = g.posts.find(p => p.note) || g.posts.find(p => p.caption);
+    return { ep: g.ep, title: g.title || (g.posts[0] && (g.posts[0].episode_title || g.posts[0].story_title || g.posts[0].title)) || '？？？', note: (noteSrc && (noteSrc.note || noteSrc.caption)) || '' };
+  });
+  // 近日公開エピソードカード：全部coming_soonの話 ＋ upcoming:true ＋ site.json
+  const allUpcoming = upcomingList.concat(soonGroups);
+  function childType(p){
+    if(p.coming_soon) return p.type_label || '準備中';
+    if(p.manga_pages>0) return '漫画';
+    if(p.webtoon_pages>0) return 'WEBTOON';
+    if(p.video_id) return '動画';
+    if(p.audio) return '音声';
+    if(p.text || p.text_file) return p.text_kind || '文章';
+    return '記事';
+  }
+
+  // エピソードウィジェット（エピソード→漫画/動画の階層）
+  document.getElementById('episodeWidget').innerHTML =
+    liveGroups.map(g => {
+      const sub = g.posts.map(p =>
+        `<a href="#${escapeHtml(p.id)}" onclick="event.preventDefault();scrollToEp('${escapeHtml(p.id)}')" style="color:#b07aa0;display:block;margin:2px 0 2px 14px;font-size:11px;">└ ${escapeHtml(childType(p))}｜${escapeHtml(p.story_title || p.title || p.top_title || '')}</a>`
+      ).join('');
+      const t = g.title ? ' '+escapeHtml(g.title) : '';
+      return `<div style="margin-bottom:8px;"><a href="#ep-${escapeHtml(g.ep)}" onclick="event.preventDefault();scrollToEp('ep-${escapeHtml(g.ep)}')" style="color:#9070c8;display:block;font-weight:bold;">EPISODE ${escapeHtml(g.ep)}${t}</a>${sub}</div>`;
+    }).join('') +
+    (allUpcoming).map(u =>
+      `<div style="margin-bottom:8px;color:#c9a0b8;font-weight:bold;">EPISODE ${escapeHtml(u.ep)}（準備中）</div>`
+    ).join('');
+
+  function renderMedia(p, ep){
+    const total = p.manga_pages || 0;
+    const mangaHtml = total ? `
+      <div id="reader-${ep}" style="margin-bottom:12px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+          <div style="font-size:12px;color:#9070c8;letter-spacing:0.1em;">MANGA</div>
+          <button class="manga-fullscreen-btn" onclick="openModal('${ep}')">⛶ 全画面で読む</button>
+        </div>
+        <div class="manga-reader">
+          <div class="manga-stage" id="stage-${ep}" onclick="activeEp='${ep}'">
+            <div class="manga-strip" id="strip-${ep}"></div>
+            <button class="manga-nav-btn prev" type="button" title="次のページ（←）">←</button>
+            <button class="manga-nav-btn next" type="button" title="前のページ（→）">→</button>
+          </div>
+          <div class="manga-footer">
+            <span class="manga-counter">読込中...</span>
+            <div class="manga-dots"></div>
+            <span class="manga-hint">${isMobile() ? '← スワイプ →' : '← 次のページ / → 前のページ'}</span>
+          </div>
+        </div>
+      </div>` : '';
+
+    const videoHtml = p.video_id ? `
+      <div style="margin-top:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+          <div style="font-size:12px;color:#9070c8;letter-spacing:0.1em;">RELATED VIDEO</div>
+          <button class="manga-fullscreen-btn" onclick="openVideoFS(this)">⛶ 全画面で見る</button>
+        </div>
+        <div class="video-frame" style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border:2px solid #c4a8f5;border-radius:6px;">
+          <iframe
+            src="https://embed.nicovideo.jp/watch/${escapeHtml(p.video_id)}?jsapi=1&noRelatedVideo=1&autoplay=0"
+            style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"
+            allowfullscreen webkitallowfullscreen mozallowfullscreen
+            allow="autoplay; fullscreen; encrypted-media"></iframe>
+        </div>
+      </div>` : '';
+
+    const audioHtml = p.audio ? `
+      <div style="margin-top:8px;">
+        <div style="font-size:12px;color:#9070c8;letter-spacing:0.1em;margin-bottom:6px;">AUDIO</div>
+        <audio controls preload="none" src="${escapeHtml(p.audio)}" style="width:100%;"></audio>
+      </div>` : '';
+
+    const textHtml = p.text ? `
+      <div class="story-text">
+        <div style="font-size:12px;color:#9070c8;letter-spacing:0.1em;margin-bottom:8px;">${escapeHtml(p.text_kind==='小説'?'NOVEL':'TEXT')}</div>
+        <div class="story-text-body">${escapeHtml(p.text).replace(/\n/g,'<br>')}</div>
+      </div>` : '';
+
+    const wt = p.webtoon_pages || 0;
+    const webtoonHtml = wt ? `
+      <div style="margin-top:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+          <div style="font-size:12px;color:#9070c8;letter-spacing:0.1em;">WEBTOON</div>
+          <button class="manga-fullscreen-btn" onclick="openWebtoonFS('${ep}',${wt})">⛶ 全画面で読む</button>
+        </div>
+        <div class="webtoon-strip">
+          ${Array.from({length:wt},(_,i)=>{
+            const n=String(i+1).padStart(2,'0');
+            return `<img class="webtoon-page" src="images/webtoon/ep${ep}-p${n}.png" alt="EP${ep} ${n}" onerror="this.outerHTML='<div class=\\'webtoon-placeholder\\'>webtoon/ep${ep}-p${n}.png</div>'">`;
+          }).join('')}
+        </div>
+      </div>` : '';
+
+    return mangaHtml + webtoonHtml + videoHtml + audioHtml + textHtml;
+  }
+
+  function renderChild(p, ep){
+    // コンテンツ単位の「準備中」：coming_soon:true で中身を隠して準備中表示にする
+    if(p.coming_soon){
+      return `
+      <div class="story-child story-child-soon" id="${escapeHtml(p.id)}">
+        <div class="story-child-head">
+          <span class="story-child-type">${escapeHtml(p.type_label || 'COMING SOON')}</span>
+          <span class="story-child-title">${escapeHtml(p.story_title || p.title || '？？？')}</span>
+          <span class="story-child-soon-badge">準備中</span>
+        </div>
+        ${p.caption ? `<div class="story-child-caption">${escapeHtml(p.caption).replace(/\n/g,'<br>')}</div>` : ''}
+      </div>`;
+    }
+    return `
+      <div class="story-child" id="${escapeHtml(p.id)}">
+        <div class="story-child-head">
+          <span class="story-child-type">${escapeHtml(childType(p))}</span>
+          <span class="story-child-title">${escapeHtml(p.story_title || p.title)}</span>
+        </div>
+        ${p.caption ? `<div class="story-child-caption">${escapeHtml(p.caption).replace(/\n/g,'<br>')}</div>` : ''}
+        ${renderMedia(p, ep)}
+        ${p.pcl ? `<div class="pcl-credit">この作品はピアプロ・キャラクター・ライセンスに基づいて<br>クリプトン・フューチャー・メディア株式会社のキャラクター「初音ミク」を使用しています。<br><a href="https://piapro.jp/license/pcl/summary" target="_blank" rel="noopener">https://piapro.jp/license/pcl/summary</a></div>` : ''}
+      </div>`;
+  }
+
+  const html = liveGroups.map(g => {
+    const headerTitle = g.title || g.posts[0].title;
+    return `
+      <div class="card story-ep-card" id="ep-${escapeHtml(g.ep)}" data-ep="${escapeHtml(g.ep)}">
+        <div class="post-header story-ep-header" onclick="togglePost(this)">
+          <div class="story-ep-badge"><span class="story-ep-lbl">EPISODE</span><span class="story-ep-no">${escapeHtml(g.ep)}</span></div>
+          <div class="story-ep-titlewrap"><div class="post-title">${escapeHtml(headerTitle)}</div></div>
+          <span class="post-arr">▶</span>
+        </div>
+        <div class="post-body">
+          ${g.synopsis ? `<div class="story-synopsis story-ep-synopsis"><div class="story-synopsis-label">✎ あらすじ</div><div class="story-synopsis-text">${escapeHtml(g.synopsis).replace(/\n/g,'<br>')}</div></div>` : ''}
+          <div class="story-contents-label">✧ CONTENTS</div>
+          ${g.posts.map(p => renderChild(p, g.ep)).join('<div class="story-child-sep"></div>')}
+        </div>
+      </div>`;
+  }).join('');
+
+  const disclaimer = `<div class="story-disclaimer">※ この物語はフィクションであり、実在の人物・団体・場所・祭日・宗教・思想信条等とは一切関係ありません。これは全部ぼくの夢のなかのはなしです。</div>`;
+  // 準備中エピソード： posts.json の upcoming:true（または site.json の story_upcoming/show:true）
+  const upcoming = allUpcoming.map(u => `
+      <div class="card story-ep-card story-ep-upcoming">
+        <div class="post-header story-ep-header" style="cursor:default;">
+          <div class="story-ep-badge"><span class="story-ep-lbl">EPISODE</span><span class="story-ep-no">${escapeHtml(u.ep)}</span></div>
+          <div class="story-ep-titlewrap">
+            <div class="post-title">${escapeHtml(u.title || '？？？')}</div>
+            ${u.note ? `<div class="story-ep-soon-note">${escapeHtml(u.note)}</div>` : ''}
+          </div>
+          <span class="story-ep-soon">準備中</span>
+        </div>
+      </div>`).join('');
+  document.getElementById('mainContent').innerHTML = disclaimer + html + upcoming;
+
+  // 漫画リーダーを初期化
+  liveGroups.forEach(g => g.posts.forEach(p => {
+    if(p.manga_pages) buildReader(g.ep, p.manga_pages, `reader-${g.ep}`);
+  }));
+
+  // TOPなどから #post_xxx / #ep-01 で来たら該当エピソードを開いてスクロール
+  if(location.hash){
+    const id = decodeURIComponent(location.hash.slice(1));
+    const el = document.getElementById(id);
+    if(el){
+      const card = el.closest('.card') || el;
+      const body = card.querySelector('.post-body');
+      const arr = card.querySelector('.post-arr');
+      if(body && !body.classList.contains('open')){ body.classList.add('open'); if(arr) arr.classList.add('open'); }
+      requestAnimationFrame(()=>{
+        const y = el.getBoundingClientRect().top + window.scrollY - 80;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      });
+    }
+  }
+})();
+
+function buildReader(ep, total, wrapperId) {
+  const wrapper = document.getElementById(wrapperId);
+  if(!wrapper) return;
+  const stage   = wrapper.querySelector('.manga-stage');
+  const strip   = wrapper.querySelector('.manga-strip');
+  const prevBtn = wrapper.querySelector('.manga-nav-btn.prev');
+  const nextBtn = wrapper.querySelector('.manga-nav-btn.next');
+  const counter = wrapper.querySelector('.manga-counter');
+  const dotsEl  = wrapper.querySelector('.manga-dots');
+
+  const isSP = isMobile();
+  const spreads = [];
+  if(isSP) {
+    for(let i=1;i<=total;i++) spreads.push([i]);
+  } else {
+    // 右から左読み
+    // 各スプレッドは { right: 奇数ページ, left: 偶数ページ } の形
+    // DOM順は [左ページ, 右ページ] で並べる（CSS flex通常方向）
+    // 表示：左=偶数、右=奇数
+    for(let i=1;i<=total;i+=2) {
+      if(i+1<=total) spreads.push({ right: i, left: i+1 });
+      else spreads.push({ right: i, left: null });
+    }
+  }
+  const totalSpreads = spreads.length;
+
+  strip.innerHTML=''; dotsEl.innerHTML='';
+
+  function addPage(spread, pg) {
+    const pageDiv = document.createElement('div');
+    pageDiv.className = 'manga-spread-page';
+    if(pg === null) {
+      pageDiv.className += ' empty';
+      spread.appendChild(pageDiv);
+      return;
+    }
+    const img = document.createElement('img');
+    img.alt = `EP${ep} P${pg}`;
+    pageDiv.appendChild(img);
+    spread.appendChild(pageDiv);
+    img.onerror = (function(pd,p,e){return function(){
+      pd.innerHTML=`<div class="manga-placeholder"><div class="manga-placeholder-num">${p}</div><div class="manga-placeholder-label">manga/ep${e}-p${String(p).padStart(2,'0')}.png</div></div>`;
+    };})(pageDiv, pg, ep);
+    img.src = `images/manga/ep${ep}-p${String(pg).padStart(2,'0')}.png`;
+  }
+
+  spreads.forEach((sp, si) => {
+    const spread = document.createElement('div');
+    spread.className = 'manga-spread';
+    if(isSP) {
+      // スマホ：1ページ
+      addPage(spread, sp);
+    } else {
+      // 右とじ：DOM先頭=右ページ(奇数)、CSSのrow-reverseで視覚的に右へ配置
+      addPage(spread, sp.right);  // 右ページ（奇数）＝先に読む
+      addPage(spread, sp.left);   // 左ページ（偶数）
+    }
+    strip.insertBefore(spread, strip.firstChild); // 逆順に積む（右とじ：次ページが左から出る）
+
+    const dot = document.createElement('div');
+    dot.className = 'manga-dot'+(si===0?' active':'');
+    dot.addEventListener('click', ()=>goTo(si));
+    dotsEl.appendChild(dot);
+  });
+
+  let cur = 0;
+
+  function goTo(n, animate) {
+    cur = Math.max(0, Math.min(totalSpreads-1, n));
+    // 逆順に積んでいるので、表示位置＝末尾からの距離
+    // 進むとposが減り→ストリップが右へ動く→次ページが左から出現
+    const pos = totalSpreads - 1 - cur;
+    strip.style.transition = (animate === false) ? 'none' : 'transform 0.35s cubic-bezier(0.4,0,0.2,1)';
+    strip.style.transform = `translateX(-${pos*100}%)`;
+
+    // 右とじ：←=進む（最後で無効）／→=戻る（最初で無効）
+    prevBtn.disabled = cur===totalSpreads-1;
+    nextBtn.disabled = cur===0;
+    dotsEl.querySelectorAll('.manga-dot').forEach((d,i)=>d.classList.toggle('active',i===cur));
+    if(isSP) counter.textContent = `${cur+1} / ${total}`;
+    else {
+      const sp = spreads[cur];
+      if(sp.left) counter.textContent = `P${sp.right}〜${sp.left} / ${total}`;
+      else counter.textContent = `P${sp.right} / ${total}`;
+    }
+  }
+
+  prevBtn.addEventListener('click', e=>{e.preventDefault();goTo(cur+1);}); // ←ボタン=次へ
+  nextBtn.addEventListener('click', e=>{e.preventDefault();goTo(cur-1);}); // →ボタン=前へ
+  goTo(0, false);
+
+  readerStates[ep] = { goTo, cur: ()=>cur, total, spreads };
+
+  if(isSP) {
+    let startX=0,dragging=false;
+    stage.addEventListener('pointerdown',e=>{startX=e.clientX;dragging=true;stage.classList.add('grabbing');stage.setPointerCapture(e.pointerId);});
+    stage.addEventListener('pointerup',e=>{if(!dragging)return;dragging=false;stage.classList.remove('grabbing');if(Math.abs(e.clientX-startX)>40)goTo(cur+(e.clientX>startX?1:-1));});
+  }
+
+  stage.addEventListener('click', ()=>{ activeEp=ep; });
+}
+
+function scrollToEp(id) {
+  const el = document.getElementById(id);
+  if(!el) return;
+  const card = el.closest('.card') || el;
+  const body = card.querySelector('.post-body');
+  const arr  = card.querySelector('.post-arr');
+  if(body && !body.classList.contains('open')) {
+    body.classList.add('open');
+    if(arr) arr.classList.add('open');
+  }
+  const y = el.getBoundingClientRect().top + window.scrollY - 80;
+  window.scrollTo({ top: y, behavior: 'smooth' });
+}
+
+function togglePost(hdr) {
+  const body=hdr.nextElementSibling,arr=hdr.querySelector('.post-arr');
+  body.classList.toggle('open');arr.classList.toggle('open',body.classList.contains('open'));
+}
+
+/* 動画を全画面表示（オーバーレイで画面いっぱい。スマホ横向き含む） */
+function openVideoFS(btn){
+  const frame = btn.parentElement.parentElement.querySelector('.video-frame');
+  if(!frame) return;
+  const src = frame.querySelector('iframe').src;
+  let ov = document.getElementById('videoOverlay');
+  if(!ov){
+    ov = document.createElement('div');
+    ov.id = 'videoOverlay';
+    ov.className = 'video-overlay';
+    ov.innerHTML = '<button class="video-overlay-close" onclick="closeVideoFS()">✕ 閉じる</button><div class="video-overlay-inner"></div>';
+    document.body.appendChild(ov);
+  }
+  ov.querySelector('.video-overlay-inner').innerHTML =
+    `<iframe src="${src}" allowfullscreen webkitallowfullscreen mozallowfullscreen allow="autoplay; fullscreen; encrypted-media" style="width:100%;height:100%;border:none;"></iframe>`
+    + `<div class="video-tap-catch"></div>`;
+  ov.classList.add('open');
+  // スマホ：最初は閉じるボタンを隠す（画面のどこをタップしても出る）
+  if(isMobile()) ov.classList.add('ctrl-hidden'); else ov.classList.remove('ctrl-hidden');
+  if(!ov._tapBound){
+    ov._tapBound = true;
+    // 操作ボタンが隠れている間：透明レイヤーが画面全体のタップを受け、ボタンを出す。
+    //   出ている間：レイヤーは無効化され、タップはプレイヤーに届く。数秒で自動的に隠れる。
+    const catcher = ov.querySelector('.video-tap-catch');
+    const showCtrls = ()=>{
+      ov.classList.remove('ctrl-hidden');
+      clearTimeout(ov._hideT);
+      if(isMobile()) ov._hideT = setTimeout(()=>ov.classList.add('ctrl-hidden'), 3000);
+    };
+    catcher.addEventListener('click', showCtrls);
+    // 閉じるボタン以外の余白タップでも出す
+    ov.addEventListener('click', e=>{
+      if(e.target.closest('.video-overlay-close')) return;
+      if(e.target.closest('.video-tap-catch')) return; // 上で処理済み
+      if(e.target.tagName === 'IFRAME') return;
+      showCtrls();
+    });
+  }
+  document.body.style.overflow = 'hidden';
+  document.body.style.transform = '';
+  // ボーナス：OSの全画面が使えるなら横向きにロック
+  const req = ov.requestFullscreen || ov.webkitRequestFullscreen || ov.msRequestFullscreen;
+  if(req && document.fullscreenEnabled){
+    const p = req.call(ov);
+    if(p && p.then) p.then(()=>{ try{ if(screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(()=>{}); }catch(e){} }).catch(()=>{});
+  }
+}
+
+/* スマホ：動画オーバーレイ表示中に横向きにしたら、横向き全画面（ネイティブ全画面）に。
+   縦に戻したらネイティブ全画面を解除（オーバーレイ自体は開いたまま）。 */
+function _videoOrient(){
+  const ov = document.getElementById('videoOverlay');
+  if(!ov || !ov.classList.contains('open')) return;
+  const landscape = (window.innerWidth > window.innerHeight);
+  if(landscape){
+    ov.classList.add('ctrl-hidden'); // 横向きは没入表示
+    const req = ov.requestFullscreen || ov.webkitRequestFullscreen || ov.msRequestFullscreen;
+    if(req && document.fullscreenEnabled && !document.fullscreenElement){
+      try{ const p=req.call(ov); if(p&&p.catch) p.catch(()=>{}); }catch(e){}
+    }
+  } else {
+    if(document.fullscreenElement){
+      try{ (document.exitFullscreen||document.webkitExitFullscreen||function(){}).call(document); }catch(e){}
+    }
+  }
+}
+window.addEventListener('orientationchange', ()=>setTimeout(_videoOrient,200));
+window.addEventListener('resize', _videoOrient);
+function closeVideoFS(){
+  const ov = document.getElementById('videoOverlay');
+  if(ov){ ov.classList.remove('open'); ov.querySelector('.video-overlay-inner').innerHTML = ''; }
+  document.body.style.overflow = '';
+  if(document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(()=>{});
+  try{ if(screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); }catch(e){}
+}
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape'){ const ov=document.getElementById('videoOverlay'); if(ov && ov.classList.contains('open')) closeVideoFS(); }
+});
+
+/* webtoon を全画面（縦スクロール）で表示 */
+function openWebtoonFS(ep, total){
+  let ov = document.getElementById('webtoonOverlay');
+  if(!ov){
+    ov = document.createElement('div');
+    ov.id = 'webtoonOverlay';
+    ov.className = 'webtoon-overlay';
+    ov.innerHTML = '<button class="video-overlay-close" onclick="closeWebtoonFS()">✕ 閉じる</button><div class="webtoon-overlay-inner"></div>';
+    document.body.appendChild(ov);
+  }
+  const inner = ov.querySelector('.webtoon-overlay-inner');
+  inner.innerHTML = Array.from({length:total},(_,i)=>{
+    const n=String(i+1).padStart(2,'0');
+    return `<img class="webtoon-page" src="images/webtoon/ep${ep}-p${n}.png" alt="EP${ep} ${n}" onerror="this.outerHTML='<div class=\\'webtoon-placeholder\\'>webtoon/ep${ep}-p${n}.png</div>'">`;
+  }).join('');
+  inner.scrollTop = 0;
+  ov.classList.add('open');
+  // スマホ：最初は閉じるボタンを隠す（画面タップで出す）
+  if(isMobile()) ov.classList.add('ctrl-hidden'); else ov.classList.remove('ctrl-hidden');
+  if(!ov._tapBound){
+    ov._tapBound = true;
+    // タップ（スクロールではない）で操作ボタンの表示切替。閉じるボタンのタップは除外。
+    ov.addEventListener('click', e=>{
+      if(e.target.closest('.video-overlay-close')) return;
+      ov.classList.toggle('ctrl-hidden');
+    });
+  }
+  document.body.style.overflow = 'hidden';
+  document.body.style.transform = '';
+}
+function closeWebtoonFS(){
+  const ov = document.getElementById('webtoonOverlay');
+  if(ov){ ov.classList.remove('open'); ov.querySelector('.webtoon-overlay-inner').innerHTML = ''; }
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape'){ const ov=document.getElementById('webtoonOverlay'); if(ov && ov.classList.contains('open')) closeWebtoonFS(); }
+});
+</script>
+</body>
+</html>

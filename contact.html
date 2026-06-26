@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CONTACT</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<script src="maintenance.js"></script>
+<script src="marquee.js"></script>
+<script src="pull-refresh.js"></script>
+<!-- ✶ ぼくのひみつ [5/5]「ー」：管理者から声をもらったんだ〜♪ -->
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<nav id="nav">
+  <div class="nav-inner">
+    <div class="nav-logo" id="navLogo">読込中...</div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">TOP</a></li>
+      <li><a href="story.html">STORY</a></li>
+      <li><a href="utau.html">UTAU</a></li>
+      <li><a href="note.html">NOTE</a></li>
+      <li><a href="contact.html" class="active">CONTACT</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="メニュー">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="marquee-bar"><span class="marquee-inner" id="marqueeText">読込中...</span></div>
+<div class="page-body">
+<div class="page-header">
+  <div class="page-header-deco">☆.。.:*・°☆.。.:*・°☆.。.:*・°☆.。.:*・°☆</div>
+  <div class="page-header-title">CONTACT</div>
+  <div class="page-header-sub">～管理者について～</div>
+  <div class="page-header-deco">☆.。.:*・°☆.。.:*・°☆.。.:*・°☆.。.:*・°☆</div>
+</div>
+<div class="layout">
+  <div class="main" id="mainContent">読込中...</div>
+  <div class="sidebar">
+    <div class="widget">
+      <div class="widget-t">☆ LINK ☆</div>
+      <div class="widget-b" style="text-align:left;font-size:9px;">
+        <a href="utau.html" style="color:#9070c8;display:block;margin-bottom:2px;">UTAU音源</a>
+        <a href="note.html" style="color:#9070c8;display:block;margin-bottom:2px;">利用規約</a>
+        <a href="index.html" style="color:#9070c8;display:block;">TOPに戻る</a>
+      </div>
+    </div>
+  </div>
+</div>
+</div><!-- /.page-body -->
+<footer id="footer"></footer>
+
+<script>
+async function loadJSON(path){ const r=await fetch(path); return r.json(); }
+function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+(function(){
+  const btn=document.getElementById('hamburger'),links=document.getElementById('navLinks'),overlay=document.getElementById('drawerOverlay');
+  function toggle(o){btn.classList.toggle('open',o);links.classList.toggle('open',o);overlay.classList.toggle('open',o);}
+  btn.addEventListener('click',()=>toggle(!btn.classList.contains('open')));
+  overlay.addEventListener('click',()=>toggle(false));
+  links.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>toggle(false)));
+})();
+
+(async function(){
+  const site = await loadJSON('data/site.json');
+  document.getElementById('navLogo').textContent = site.nav_logo;
+  document.getElementById('footer').textContent = site.footer;
+  document.getElementById('marqueeText').textContent = pickMarqueeText(site);
+
+  const snsHtml = Object.entries(site.sns).map(([,s])=>`
+    <a href="${escapeHtml(s.url)}" target="_blank" rel="noopener" class="sns-link">
+      ${escapeHtml(s.label)}
+    </a>`).join('');
+
+  document.getElementById('mainContent').innerHTML = `
+    <div class="note-section">
+      <div class="author-icon-wrap">
+        <img src="${escapeHtml(site.author_icon)}" alt="${escapeHtml(site.author_name)}"
+          onerror="this.parentNode.innerHTML='<div style=\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:28px;\'>✍</div>'">
+      </div>
+      <div style="text-align:center;margin-bottom:12px;">
+        <div style="font-family:'Kaisei Decol',serif;font-size:24px;color:#4a2880;font-weight:700;">${escapeHtml(site.author_name)}</div>
+      </div>
+      <div style="font-size:15px;color:#504080;line-height:2;margin-bottom:12px;text-align:center;">${escapeHtml(site.author_bio).replace(/\n/g,'<br>')}</div>
+      ${snsHtml}
+    </div>
+    <div class="note-section">
+      <div class="note-section-title">お問い合わせ</div>
+      <div style="font-size:13px;color:#504080;line-height:2;">
+        ご質問・ご連絡はX（Twitter）のDM、または下のお問い合わせフォームからお願いいたします。<br>
+        音源・素材の利用報告は任意ですが大変喜びます(^▽^)
+      </div>
+      ${site.contact_form_url ? `<a href="${escapeHtml(site.contact_form_url)}" target="_blank" rel="noopener" class="sns-link" style="margin-top:12px;">お問い合わせフォーム</a>` : ''}
+    </div>`;
+})();
+</script>
+</body>
+</html>

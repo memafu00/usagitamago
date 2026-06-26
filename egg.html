@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ひみつのへや</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<script src="maintenance.js"></script>
+<script src="marquee.js"></script>
+<script src="pull-refresh.js"></script>
+<!-- ✶ ぼくのひみつ：きょうだけ、とくべつなおへやが あいているよ。 -->
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<nav id="nav">
+  <div class="nav-inner">
+    <div class="nav-logo" id="navLogo">読込中...</div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">TOP</a></li>
+      <li><a href="story.html">STORY</a></li>
+      <li><a href="utau.html">UTAU</a></li>
+      <li><a href="note.html">NOTE</a></li>
+      <li><a href="contact.html">CONTACT</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="メニュー">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="marquee-bar"><span class="marquee-inner" id="marqueeText">読込中...</span></div>
+<div class="page-body">
+<div class="page-header">
+  <div class="page-header-deco">☆.。.:*・°☆.。.:*・°☆.。.:*・°☆.。.:*・°☆</div>
+  <div class="page-header-title" id="eggTitle">ひみつのへや</div>
+  <div class="page-header-sub" id="eggSub">～たまごの日～</div>
+  <div class="page-header-deco">☆.。.:*・°☆.。.:*・°☆.。.:*・°☆.。.:*・°☆</div>
+</div>
+<div class="layout">
+  <div class="main" id="mainContent">読込中...</div>
+  <div class="sidebar">
+    <div class="widget">
+      <div class="widget-t">☆ LINK ☆</div>
+      <div class="widget-b" style="text-align:left;font-size:9px;">
+        <a href="index.html" style="color:#9070c8;display:block;">TOPに戻る</a>
+      </div>
+    </div>
+  </div>
+</div>
+</div><!-- /.page-body -->
+<footer id="footer"></footer>
+
+<script>
+async function loadJSON(path){ const r=await fetch(path); return r.json(); }
+function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+(function(){
+  const btn=document.getElementById('hamburger'),links=document.getElementById('navLinks'),overlay=document.getElementById('drawerOverlay');
+  function toggle(o){btn.classList.toggle('open',o);links.classList.toggle('open',o);overlay.classList.toggle('open',o);}
+  btn.addEventListener('click',()=>toggle(!btn.classList.contains('open')));
+  overlay.addEventListener('click',()=>toggle(false));
+  links.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>toggle(false)));
+})();
+
+(async function(){
+  const site = await loadJSON('data/site.json');
+  document.getElementById('navLogo').textContent = site.nav_logo;
+  document.getElementById('footer').textContent = site.footer;
+  document.getElementById('marqueeText').textContent = pickMarqueeText(site);
+
+  const ep = site.egg_page || {};
+  document.getElementById('eggTitle').textContent = ep.title || 'ひみつのへや';
+  document.getElementById('eggSub').textContent = ep.sub || '～たまごの日～';
+
+  const open = !!(window.isTamagoDay && window.isTamagoDay());
+
+  if(!open){
+    // たまごの日以外の日は、まだ開かない
+    document.getElementById('mainContent').innerHTML = `
+      <div class="note-section" style="text-align:center;">
+        <div style="font-size:44px;margin-bottom:12px;letter-spacing:8px;color:#e7b85c;">○ ○ ○</div>
+        <div style="font-family:'Kaisei Decol',serif;font-size:22px;color:#4a2880;font-weight:700;margin-bottom:10px;">まだ、その日じゃないみたい</div>
+        <div style="font-size:14px;color:#504080;line-height:2;">
+          このおへやは、たまごの日だけ あらわれるよ。<br>
+          また今度、あそびにきてね。
+        </div>
+        <a href="index.html" class="sns-link" style="margin-top:16px;">TOPに戻る</a>
+      </div>`;
+    return;
+  }
+
+  const links = (ep.links || []).map(l => `
+    <a href="${escapeHtml(l.url)}" target="_blank" rel="noopener" class="sns-link" style="margin-top:10px;">
+      ${escapeHtml(l.label)}
+    </a>`).join('');
+
+  document.getElementById('mainContent').innerHTML = `
+    <div class="note-section" style="text-align:center;">
+      <div style="font-size:16px;color:#504080;line-height:2.1;margin-bottom:6px;">${escapeHtml(ep.lead || '').replace(/\n/g,'<br>')}</div>
+    </div>
+    <div class="note-section">
+      <div class="note-section-title">おくりもの</div>
+      ${links}
+      ${ep.note ? `<div style="font-size:11px;color:#9070c8;line-height:1.9;margin-top:14px;text-align:center;">${escapeHtml(ep.note)}</div>` : ''}
+    </div>`;
+})();
+</script>
+</body>
+</html>
