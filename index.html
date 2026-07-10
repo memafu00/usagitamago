@@ -215,6 +215,11 @@ function escapeHtml(str) {
 
   function bodyToHtml(body, link, post) {
     let html = escapeHtml(body).replace(/\n/g, '<br>');
+    // 本文にそのまま貼られたURL（http/https）も自動でリンクにする
+    html = html.replace(
+      /(https?:\/\/[^\s<]+)/g,
+      (url) => `<a href="${url}" target="_blank" rel="noopener" class="post-body-link">${url}</a>`
+    );
     if (link) {
       html = html.replace(
         /\[([^\]]+)\]\(([^)]+)\)/g,
