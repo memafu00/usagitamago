@@ -35,6 +35,7 @@ body {
 }
 
 a { color: inherit; text-decoration: none; }
+a.post-body-link, a.post-body-link:hover { color: var(--purple2); text-decoration: underline; word-break: break-all; }
 img { display: block; max-width: 100%; }
 
 /* ── ナビ ── */
