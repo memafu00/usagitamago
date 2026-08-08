@@ -95,6 +95,18 @@
   },
   {
     "id": "post_005",
+    "date": "2026.08.08",
+    "day": "Sat",
+    "title": "∞",
+    "body": "令和8年8月8日\n漫画リンク→ https://manga.nicovideo.jp/watch/mg1122040",
+    "tags": [
+      "漫画",
+      "リンク"
+    ],
+    "link": null
+  },
+  {
+    "id": "post_005",
     "draft": true,
     "coming_soon": true,
     "date": "2026.07.15",
